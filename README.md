@@ -1,81 +1,31 @@
 # LLMbootstrap
 
-A single Markdown file that configures an AI coding agent to follow a consistent,
-opinionated workflow in any project — new or existing.
+**`LLMbootstrap.md`** is a single, portable workflow definition you drop into a
+project so an LLM coding agent works to a consistent, durable, file-based
+structure — without losing state when its context is cleared.
 
-## Overview
-`LLMbootstrap.md` is a portable *source* file you drop into a project and tell your
-AI coding agent to apply. It compiles a set of modules into the project: it creates
-working files (such as `reqs.md`) and installs short, persistent rules into the
-project's `CLAUDE.md` so the agent keeps following the workflow in every future
-session — no need to re-read the source file.
+## What it gives you
+- **One home per kind of information** — requirements and status in `reqs.md`
+  (+ `reqs/<ID>.md`), the development plan in `todo.md`, internal design in
+  `info.md`, bulky reference in `docs/`, the outward overview in `README.md`, and
+  minimal agent notes in `CLAUDE.md`.
+- **Durable memory** — goals, requirements, decisions, and tasks live in files,
+  not the chat, so clearing context loses nothing.
+- **Lightweight requirements engineering** — stable IDs, "shall" requirements, and
+  goal traceability; markdown only, sized for solo work.
+- **Lossless adoption** — an "active alignment" step reorganizes an existing
+  project into the structure without discarding or inventing anything.
 
-The point is to make project documentation the project's **durable memory**. Goals,
-requirements, bugs, and decisions live in tracked files, not in the chat, so an AI
-coding session becomes disposable: clearing the context window or starting a new
-chat loses nothing.
+## Using it
+1. Copy `LLMbootstrap.md` into your project.
+2. Have `CLAUDE.md` import it (`@LLMbootstrap.md`).
+3. Ask your agent: *"Bring this project into line with `LLMbootstrap.md`."*
 
-Applying is a **maximum-effort** operation. It scans the whole project — every
-Markdown file and every code file (for `TODO`/`FIXME` comments and docstrings) —
-and aligns both the *structure* and the *content* of the project's tracking files
-to the conventions. It is **lossless**: existing information is relocated and
-reformatted, never deleted, and nothing is invented. The operation is idempotent
-and convergent — a single "apply" creates what's missing, restructures what drifted,
-and leaves compliant parts untouched — so re-running never duplicates. It can even
-be applied recursively to the repository that contains it.
+The agent then creates or reorganizes the project's files to match the structure,
+relocating existing content rather than discarding it and asking when something is
+unclear.
 
-## Requirements
-- An AI coding agent that can read files and edit the workspace (e.g. Claude Code).
-- Nothing else — the mechanism is plain Markdown the agent reads; no extra tooling,
-  services, or dependencies.
-
-## Installation
-Copy `LLMbootstrap.md` into the root of your project.
-
-```sh
-cp LLMbootstrap.md /path/to/your/project/
-```
-
-## Usage
-In a new project, tell the agent:
-
-```
-execute LLMbootstrap.md
-```
-
-In an existing project, or to roll out an updated workflow, tell the agent:
-
-```
-apply LLMbootstrap.md
-```
-
-Both run the same idempotent procedure. The agent reads the file, scans the whole
-project, structures and losslessly aligns existing information into the conventions
-(confirming first unless you've told it to proceed), installs the managed blocks
-into `CLAUDE.md`, and prints a per-module report of what it created, aligned,
-updated, or left unchanged.
-
-## How it works
-`LLMbootstrap.md` is the source; `CLAUDE.md` and the tracking files are the compiled
-result. Each module does up to two jobs: **Structure** (scan the project and
-reorganize existing information into the module's format, losslessly) and **Install**
-(write short persistent rules into `CLAUDE.md`, wrapped in versioned
-`<!-- LLMbootstrap:module=... -->` markers). The markers let a re-apply replace an
-outdated block instead of duplicating it; code files are read-only sources and are
-never edited.
-
-Current modules:
-
-- **Core conventions** — rules that protect the workflow and govern day-to-day work.
-- **Requirements & tracking** — `reqs.md` plus `reqs/<ID>.md` detail files for
-  goals, requirements, bugs, and todos.
-- **GitHub README** — this document, derived from the project goals.
-- **Working loop** — reconcile every change with `reqs.md` before implementing it,
-  work from the tracked files rather than memory, and keep them current so no state
-  lives only in the chat.
-- **Documentation** — keep `CLAUDE.md` to rules; explanatory documentation lives in
-  an auto-loaded `info.md`, and reference material (API references, manuals) is
-  consolidated under a `docs/` folder.
-
-## License
-TBD
+## This repository
+This repo builds `LLMbootstrap.md` and is itself governed by it. See `info.md` for
+the internal design and `CLAUDE.md` for how the project handles being governed by
+its own product.
