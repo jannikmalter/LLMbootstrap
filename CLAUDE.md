@@ -34,3 +34,19 @@
 - When the goals (`G#`) or the way the project is run change, update `README.md`.
 - Don't document commands, options, or behavior that don't exist.
 <!-- LLMbootstrap:module=readme END -->
+
+<!-- LLMbootstrap:module=workflow v=1 START — managed block, edit the source not here -->
+## Working loop (reqs-first)
+- Before making any change, reconcile it with `reqs.md` FIRST: if it fits the
+  existing goals/requirements, proceed; if it is new, add the requirement / todo
+  (or goal) first; if it changes one, edit that requirement first. Implement only
+  after `reqs.md` reflects the intended change.
+- Never work from memory. Goals, requirements, decisions, alignments, and tasks
+  live in `reqs.md` / `reqs/`. If it isn't written there, it isn't decided — write
+  it down rather than carrying it in your head.
+- Keep `reqs.md` current as you go, so clearing the context or starting a new chat
+  loses nothing. At the start of a session, read `reqs.md` to recover state before
+  acting.
+- If a request is ambiguous, out of scope, or conflicts with a goal, surface that
+  against `reqs.md` and resolve it there before doing the work.
+<!-- LLMbootstrap:module=workflow END -->

@@ -11,6 +11,8 @@ Why this exists. Everything below traces to one of these.
   operation that never duplicates or clobbers.
 - **G3** — Be applicable recursively, including to the project that contains the
   file itself.
+- **G4** — Make project documentation the durable memory so AI coding sessions are
+  disposable: clearing the context or starting a new chat loses no information.
 
 ## Out of scope
 What this deliberately will *not* do (stops scope creep).
@@ -37,6 +39,7 @@ One row each. Use "shall". `Type`: F=function, Q=quality, C=constraint.
 | R10 | Q    | `CLAUDE.md` blocks shall stay short; detail and rationale live in `LLMbootstrap.md`. | S   | G1   | ☑    |
 | R11 | F    | The system shall support recording requirements that describe already-implemented work (reverse-engineered spec), with defined "done" semantics. | S   | G1   | ☐    |
 | R12 | F    | The system shall provide a module that generates/maintains a GitHub `README.md` inferred from the project's goals — a technical document covering function and usage. | S   | G1   | ☑    |
+| R13 | F    | The system shall provide a working-loop module: every change is reconciled with `reqs.md` before implementation, no work is done from memory, and all goals/decisions/tasks are documented so a cleared context or new chat loses no state. | M   | G4   | ☑    |
 
 ## Bugs
 Deviations from a requirement. `Ref` = the requirement broken.

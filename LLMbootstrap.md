@@ -136,6 +136,7 @@ in the block. Bump the `v=` in the block's marker whenever its content changes, 
 0. Core conventions — below.
 1. Requirements & tracking — below.
 2. GitHub README — below.
+3. Working loop — below.
 <!-- add further modules here as they are defined -->
 
 ## State report (printed after every run)
@@ -438,6 +439,55 @@ idempotency model as other working files.
 ## License
 <License, or "TBD".>
 ````
+
+---
+
+## Module 3 — Working loop
+
+**Id:** `workflow` (block version lives in its marker)
+
+### Purpose
+Make the work itself reqs-first: every requested change is reconciled with
+`reqs.md` *before* it is implemented, nothing is done "from memory", and every
+goal, task, and decision is written down — so clearing the context window or
+starting a new chat loses no information.
+
+### Setup actions
+**Install (every run):**
+- Ensure `CLAUDE.md` exists, then insert-or-replace the **CLAUDE.md block** below.
+  (No Structure phase — Module 1 already ingests existing content; this module only
+  installs the working discipline.)
+
+### CLAUDE.md block
+Insert or replace as a managed block:
+
+```markdown
+<!-- LLMbootstrap:module=workflow v=1 START — managed block, edit the source not here -->
+## Working loop (reqs-first)
+- Before making any change, reconcile it with `reqs.md` FIRST: if it fits the
+  existing goals/requirements, proceed; if it is new, add the requirement / todo
+  (or goal) first; if it changes one, edit that requirement first. Implement only
+  after `reqs.md` reflects the intended change.
+- Never work from memory. Goals, requirements, decisions, alignments, and tasks
+  live in `reqs.md` / `reqs/`. If it isn't written there, it isn't decided — write
+  it down rather than carrying it in your head.
+- Keep `reqs.md` current as you go, so clearing the context or starting a new chat
+  loses nothing. At the start of a session, read `reqs.md` to recover state before
+  acting.
+- If a request is ambiguous, out of scope, or conflicts with a goal, surface that
+  against `reqs.md` and resolve it there before doing the work.
+<!-- LLMbootstrap:module=workflow END -->
+```
+
+### How it works
+`reqs.md` is treated as the project's durable memory, and the chat as scratch. The
+loop is: reconcile → record → implement. Recording the intent in `reqs.md` *before*
+implementing means the spec is always at least as current as the code, the chat
+becomes disposable, and any future session can reconstruct the full state by
+reading `reqs.md`. This is what lets context windows be cleared without loss: the
+decisions never lived only in the conversation. It builds directly on Module 1
+(which defines the structure) and Module 0 (which forbids fabricating undocumented
+facts).
 
 ---
 
