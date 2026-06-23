@@ -11,6 +11,8 @@ Before acting, decide which of two modes you are in; they carry different rules.
 - **Authoring the artifact** — editing LLMbootstrap.md or its templates/examples *as the product*. This is normal editing: refactor, cut redundancy, restructure freely. The lossless / "no data loss" guarantee does **not** apply here.
 - **Operating under the workflow** — doing project work the way LLMbootstrap.md prescribes. Only happens after a deliberate apply. Here the lossless guarantee **does** apply: an apply must lose no existing information and invent nothing new.
 
+**The two are not mutually exclusive.** The repo's central activity — editing LLMbootstrap.md or these guardrails — is *authoring the artifact* **and**, at the same time, the project work the workflow tracks. The split is about *which guarantee applies*, not *which task you do*: the lossless / "no data loss" guarantee never constrains the product's content (author freely), but the operating duties still apply to the *act* of editing — reconcile against `reqs.md` before changing, keep it current after. So "I'm only authoring" is never a reason to skip `reqs.md`.
+
 If you cannot tell which mode you are in, **stop and ask**. Guessing here corrupts the source of truth.
 
 ### 2. Keep product and project records strictly separate

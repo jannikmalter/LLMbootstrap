@@ -34,7 +34,9 @@ All rows are recorded **(as-built)** — the implementation is `LLMbootstrap.md`
 ## Bugs
 Deviations from a requirement. `Ref` = the requirement broken.
 
-*None open.*
+| ID | Bug                                                                                   | Ref | Sev | Done |
+|----|---------------------------------------------------------------------------------------|-----|-----|------|
+| B1 | "Which hat" guardrail frames authoring vs. operating as mutually exclusive, but editing `LLMbootstrap.md` is both — leaving a foothold to skip the `reqs.md` reconcile under the authoring hat. | R7  | Md  | ☑    |
 
 ---
 *Pri:* M/S/C (must/should/could). *Sev:* Hi/Md/Lo. IDs are permanent — never reuse.
