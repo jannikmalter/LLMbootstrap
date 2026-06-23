@@ -1,3 +1,6 @@
+This is a project building a bootstrap file for project initialization and restructurization. Don't get confused, "LLMbootstrap.md" is our code, not our guide. We build "LLMbootstrap.md". We might apply the file to this project itself, but during normal operation, this is our patient.
+
+
 <!-- LLMbootstrap:module=core v=1 START — managed block, edit the source not here -->
 ## Project conventions (managed by LLMbootstrap)
 - This project's workflow is defined by `LLMbootstrap.md`. The blocks between
@@ -9,13 +12,15 @@
   something is implied but ambiguous, raise it as an open question.
 <!-- LLMbootstrap:module=core END -->
 
-<!-- LLMbootstrap:module=requirements v=2 START — managed block, edit the source not here -->
+<!-- LLMbootstrap:module=requirements v=3 START — managed block, edit the source not here -->
 ## Requirements & tracking
 - Goals, requirements, bugs, todos are tracked in `reqs.md` (overview + source of
   truth for status/priority/severity/trace) and `reqs/<ID>.md` detail files.
 - IDs are stable and never reused: `G#` goals, `R#` requirements
   (Type F=function / Q=quality / C=constraint), `B#` bugs. Todos are checklist lines.
 - Requirements use "shall", are singular and verifiable, and each traces to a goal.
+- You may record requirements for already-built behavior (as-built); `Done` still
+  means acceptance criteria verified against the code, not merely that code exists.
 - An item's tracked status, priority, and severity live ONLY in the `reqs.md`
   tables — the `Done` flag there is authoritative. Detail files (headed
   `# <ID> — <name>`) hold description plus *working* checklists (acceptance

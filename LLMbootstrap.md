@@ -18,8 +18,11 @@ module does up to two jobs:
   structure without re-reading this file.
 
 After a run, day-to-day behavior is driven by `CLAUDE.md`, **not** by re-reading
-this file. Applying to a messy existing project is the main event: it ingests the
-mess once, then keeps it tidy thereafter.
+this file. Applying to a messy existing project is the main event, and it is a
+**maximum-effort** operation: every apply scans the *whole* project — every
+markdown file and every code file — and aligns both the structure and the content
+of the project's tracking files to this file's conventions. It is not a one-time
+ingestion; it re-converges on every run.
 
 There is exactly **one operation: Apply** (converge the project to the desired
 state). The user may invoke it as **"execute LLMbootstrap.md"** (typically a new
@@ -28,35 +31,43 @@ both run the same procedure. The only difference is what's already present:
 
 - nothing present → everything is created;
 - a module's managed block is present but outdated → it is replaced in place;
+- a working file is present but doesn't match the conventions → it is restructured
+  in place, **losslessly** (content relocated/reformatted, never dropped);
 - already compliant → left untouched.
 
-So re-running is always safe and never duplicates.
+So re-running is always safe, never duplicates, and never loses information.
 
 ## Apply procedure
 
 1. **Read the whole file**, including every module under **Modules**.
-2. **Detect state.** For each module, check: do its working files exist and are
-   they populated? Is its managed `CLAUDE.md` block present and at the current
-   version (see *Managed blocks*)? This decides whether the module needs the
-   structuring phase, the install phase, both, or nothing.
-3. **Structure (first-run ingestion), module by module.** If the module's working
-   files are absent or empty, sweep the project for relevant information wherever
-   it lives (within the *sweep scope* below) and reorganize it into the module's
-   format. Then **confirm before writing — unless the user has pre-authorized
-   proceeding.** A direct instruction to apply ("apply LLMbootstrap.md", "set up
-   this project", "infer from chat", "don't ask") *is* pre-authorization: write
-   directly and, in the report, state what was inferred and from where so it can
-   be corrected. Absent such authorization (e.g. an unattended run, or a large
-   ambiguous project), present the proposed result with the source of each item
-   and wait for confirmation. Once written, the working file is the user's; do not
-   re-scan or rewrite it on later applies unless explicitly asked to re-ingest.
-   This keeps ingestion idempotent.
+2. **Detect state.** For each module, check: do its working files exist, are they
+   populated, and do they match the conventions (structure + content)? Is its
+   managed `CLAUDE.md` block present and at the current version (see *Managed
+   blocks*)? This decides whether the module needs to create its working file,
+   restructure an existing one, refresh its block, or nothing.
+3. **Structure + align (every run), module by module.** Sweep the *whole* project
+   (within the *sweep scope* below) for the information the module tracks, wherever
+   it lives, and reorganize it into the module's format:
+   - if the module's working file is absent or empty, create it from what you find;
+   - if it exists but does not match the conventions (wrong structure, missing
+     fields, content that belongs in another file), **restructure it in place,
+     losslessly** — relocate and reformat existing content, preserve every user
+     addition (IDs, rows, notes, prose), delete nothing and invent nothing.
+
+   Then **confirm before writing — unless the user has pre-authorized proceeding.**
+   A direct instruction to apply ("apply LLMbootstrap.md", "set up this project",
+   "infer from chat", "don't ask") *is* pre-authorization: write directly and, in
+   the report, state what was changed or inferred and from where so it can be
+   corrected. Absent such authorization (e.g. an unattended run, or a large
+   ambiguous project), present the proposed result — any restructure shown as a
+   diff — with the source of each item, and wait for confirmation. Re-applying is
+   convergent: a file that already matches the conventions is left untouched.
 4. **Install / refresh, module by module, in order.** Ensure scaffolding (dirs)
    exists, then insert-or-replace the module's managed `CLAUDE.md` block per the
    *Managed blocks* rules. This phase is fully idempotent and runs on every apply.
    Never undo a user's edits outside managed blocks.
 5. **Report.** Print a short per-module summary of what happened
-   (structured / installed / updated vX→vY / unchanged / skipped + why).
+   (structured / aligned / installed / updated vX→vY / unchanged + why).
    See *State report*.
 
 **The structuring/invention line.** Relocating, deduplicating, and reformatting
@@ -65,22 +76,36 @@ Fabricating requirements, goals, or facts that are not stated anywhere is not �
 never do it. When something is implied but ambiguous, list it as an open question
 for the user rather than committing it.
 
-**Sweep scope.** When ingesting, read human-authored project text: README and
-docs, design notes, an existing `CLAUDE.md`, the issue tracker, source comments
-(`TODO`/`FIXME`/`HACK`), and loose `*.md` at or near the root. **Skip** dependency,
-build, and VCS directories (`.git`, `node_modules`, `dist`, `build`, `target`,
-`vendor`, `.venv`, caches) and generated/minified files. Prefer breadth over
-exhaustive reading; if the project is large, sample representative files and ask
-the user where to look rather than reading everything.
+**Sweep scope.** Apply is maximum-effort: scan the **whole** project, not a sample.
+Read **every** markdown file (README, docs, design notes, an existing `CLAUDE.md`,
+loose `*.md` anywhere) and **every** code file — mining source comments
+(`TODO`/`FIXME`/`HACK`), docstrings, and header comments for trackable information.
+Also read the issue tracker if reachable. **Code files are read-only sources: scan
+them, never edit them during apply.** **Skip** only dependency, build, and VCS
+directories (`.git`, `node_modules`, `dist`, `build`, `target`, `vendor`, `.venv`,
+caches) and generated/minified files — they contain nothing human-authored. Read
+exhaustively rather than sampling; only if the project is so large that a full scan
+is impractical, tell the user what you are skipping and why rather than silently
+narrowing.
 
 ### Safety rules
 
 **Application-time** (govern *this* procedure):
 - **Never modify `LLMbootstrap.md` as a side effect of applying.** Modules compile
   *out of* it; they never write back to it.
-- **Only managed blocks are owned by this tool.** Anything outside the markers is
-  the user's; preserve it. When unsure whether something is a user edit or drift,
-  ask before overwriting.
+- **Restructuring is lossless — this is the highest-priority rule.** When aligning a
+  populated working file to the conventions, relocate and reformat its content;
+  never delete it, drop a field, or change its meaning. Invent nothing — anything
+  implied but unstated becomes an open question, not a new entry. If a restructure
+  cannot be done without losing or altering information, stop and ask.
+- **Code and other non-tracking files are read-only.** Scan them as sources; never
+  edit source code (logic, comments, or layout) during apply. Only managed
+  `CLAUDE.md` blocks and the modules' own tracking files are written.
+- **Managed blocks are owned by this tool; tracking files are restructured, not
+  owned.** A managed block is replaced wholesale to its current version. A tracking
+  file (e.g. `reqs.md`) is realigned to its template but its content stays the
+  user's — preserved losslessly. When unsure whether something is a user edit or
+  drift, ask before changing it.
 
 **Ongoing** (must govern day-to-day work *after* a run): because the agent then
 works from `CLAUDE.md` and not this file, these rules can't live only here — they
@@ -120,8 +145,8 @@ Rules for the agent:
 Each module has, in this order:
 **Id** (e.g. `id: requirements`; the block version lives in the marker, not here) ·
 **Purpose** ·
-**Setup actions**, split into **Structure** (first-run ingestion of existing
-content into the module's format; confirm with user; skip once populated) and
+**Setup actions**, split into **Structure** (every-run gathering of existing
+content and lossless alignment into the module's format; confirm with user) and
 **Install** (idempotent every-run scaffolding + managed-block injection). A module
 may have only one of the two if the other doesn't apply. ·
 **CLAUDE.md block** (the short persistent rules, shown wrapped in markers) ·
@@ -145,9 +170,9 @@ in the block. Bump the `v=` in the block's marker whenever its content changes, 
 LLMbootstrap apply — <project>
   core           installed               (CLAUDE.md block v1)
   requirements   structured + installed  (reqs.md from 7 sources, CLAUDE.md v2)
+  readme         aligned                 (README.md restructured, 0 items lost)
   <module>       updated v1→v2            (CLAUDE.md block)
-  <module>       unchanged
-  <module>       skipped                 (reqs.md already populated)
+  <module>       unchanged               (already matches conventions)
 ```
 
 ---
@@ -201,19 +226,38 @@ Module 0 guarantees the protection is installed before anything else.
 Track goals, requirements, bugs, and todos with stable IDs and traceability,
 without heavyweight tooling.
 
-**Structure (first run only — when `reqs.md` is absent or empty):**
-- Sweep the project for anything describing what it's for or what's left to do:
-  README and other docs, an existing `CLAUDE.md`, `TODO`/`FIXME`/`HACK` comments,
-  the issue tracker, design notes, scattered `*.md` files.
+**Structure + align (every run):**
+- Sweep the *whole* project (per *Sweep scope*) for anything describing what it's
+  for or what's left to do: every markdown file, every code file's
+  `TODO`/`FIXME`/`HACK` comments and docstrings, an existing `CLAUDE.md`, the issue
+  tracker, design notes.
 - Reorganize the findings into the `reqs.md` template below: derive **Goals** and
   **Out of scope**, turn explicit "shall/should/must" statements into `R#`
   requirements (each traced to a goal), known defects into `B#` bugs, loose work
   items into todos. Spin off a `reqs/<ID>.md` only where real detail exists.
-- **Present the proposed `reqs.md` (and any detail files) to the user with the
-  source of each item, and confirm before writing.** Items that are implied but
-  ambiguous go under an "Open questions" list, not into the tables.
-- If `reqs.md` already exists and is populated, skip this phase entirely — it is
-  now user-owned content. (Re-ingest only on explicit request.)
+- **Reverse-engineered (as-built) requirements.** Behavior that is implemented in
+  code but never written as a spec may be recorded as a normal `R#` requirement
+  describing what the code does, traced to a goal. This stays within R6 — you are
+  describing behavior *explicitly present* in the code, not inventing intent;
+  anything the code does not make evident is an open question, not a requirement.
+  Record provenance (the source file/symbol it was read from) in the item's
+  `reqs/<ID>.md` (an **As-built** note) or as an inline `(as-built)` tag, and state
+  in the report that it was inferred from code. **Done semantics:** `Done` means
+  the same thing for every requirement — its acceptance criteria are *verified*. For
+  an as-built item the criteria are written as checks of the existing behavior; the
+  code existing is necessary but not sufficient, so leave it `☐` until those checks
+  are confirmed (e.g. a test exists or you verified each criterion against the code).
+- If `reqs.md` is absent or empty, create it. If it exists but does not match this
+  template (missing columns, malformed tables, orphaned `reqs/<ID>.md` files,
+  status tracked outside the tables), **restructure it in place, losslessly**: keep
+  every existing ID, row, and note, never renumber or drop an item, only normalize
+  structure and fold in newly-found items. Newly-found statements are *added*; they
+  never overwrite an existing row.
+- **Present the proposed `reqs.md` (and any detail files) — restructures shown as a
+  diff — with the source of each item, and confirm before writing** unless
+  pre-authorized (see Apply step 3). Items implied but ambiguous go under an "Open
+  questions" list, not into the tables.
+- A `reqs.md` that already matches the template is left untouched (convergent).
 
 **Install (every run):**
 - Ensure a `reqs/` directory exists (create if absent).
@@ -224,13 +268,15 @@ without heavyweight tooling.
 Insert or replace as a managed block:
 
 ```markdown
-<!-- LLMbootstrap:module=requirements v=2 START — managed block, edit the source not here -->
+<!-- LLMbootstrap:module=requirements v=3 START — managed block, edit the source not here -->
 ## Requirements & tracking
 - Goals, requirements, bugs, todos are tracked in `reqs.md` (overview + source of
   truth for status/priority/severity/trace) and `reqs/<ID>.md` detail files.
 - IDs are stable and never reused: `G#` goals, `R#` requirements
   (Type F=function / Q=quality / C=constraint), `B#` bugs. Todos are checklist lines.
 - Requirements use "shall", are singular and verifiable, and each traces to a goal.
+- You may record requirements for already-built behavior (as-built); `Done` still
+  means acceptance criteria verified against the code, not merely that code exists.
 - An item's tracked status, priority, and severity live ONLY in the `reqs.md`
   tables — the `Done` flag there is authoritative. Detail files (headed
   `# <ID> — <name>`) hold description plus *working* checklists (acceptance
@@ -252,6 +298,12 @@ stable spec (goals, requirements) separate from high-churn items (bugs, todos) a
 keeps status in exactly one place, so nothing desyncs. The ID is the link between
 the overview row and its detail file. Requirements are written to be verifiable;
 "done" for a feature is defined by its acceptance criteria passing, not by judgment.
+This holds for *reverse-engineered* requirements too: when applying to a codebase
+that was built before its spec, you can record `R#` items describing what the code
+already does (as-built), but `Done` keeps its single meaning — criteria verified.
+Code existing is not the same as a requirement being met, so an as-built item stays
+open until its checks are confirmed. This keeps the `Done` flag's meaning uniform
+across hand-authored and reverse-engineered requirements.
 
 ### Template — `reqs.md`
 ```markdown
@@ -370,18 +422,22 @@ Maintain a `README.md` for GitHub readers: a technical document that states what
 the project does and how to use it, derived from the project's goals. Not marketing.
 
 ### Setup actions
-**Structure (first run — when `README.md` is absent or a placeholder, e.g. just a
-title or empty):**
+**Structure + align (every run):**
 - Read the project's **Goals** and **Out of scope** from `reqs.md` (Module 1),
   plus any existing README, docs, and usage examples within the *sweep scope*.
-- Draft a technical README from the template below: a one-line summary and an
-  **Overview** from the goals; **Requirements**/**Installation**/**Usage** from how
-  the project is actually run; an optional short **How it works**. Document only
-  what is real — where usage isn't established yet, leave a marked `TODO` rather
-  than inventing commands or options.
-- Confirm before writing unless pre-authorized (see Apply step 3).
-- If `README.md` already has real content, treat it as user-owned: do not
-  overwrite; regenerate only on explicit request ("refresh the README").
+- If `README.md` is absent or a placeholder (just a title or empty), draft a
+  technical README from the template below: a one-line summary and an **Overview**
+  from the goals; **Requirements**/**Installation**/**Usage** from how the project
+  is actually run; an optional short **How it works**. Document only what is real —
+  where usage isn't established yet, leave a marked `TODO` rather than inventing
+  commands or options.
+- If `README.md` already has real content, align it **losslessly**: reconcile its
+  structure with the template (section order, headings) and bring its Overview into
+  line with the current goals, but preserve the user's prose — relocate or reword
+  for the goals, never delete sections or invent features. If the goals and the
+  README now disagree, surface the discrepancy rather than silently rewriting.
+- Confirm before writing unless pre-authorized (see Apply step 3). A `README.md`
+  that already matches the goals and template is left untouched.
 
 **Install (every run):**
 - Ensure `CLAUDE.md` exists, then insert-or-replace the **CLAUDE.md block** below.
@@ -403,9 +459,9 @@ Insert or replace as a managed block:
 The README is the outward view of the same goals `reqs.md` tracks internally:
 `reqs.md` is the working spec, the README is the public explanation derived from
 it. Goals drive the Overview; the requirements and actual run steps drive Usage.
-It's generated once from existing material, then owned by the user, with an
-explicit refresh path so it can be re-derived when goals shift — the same
-idempotency model as other working files.
+It's generated from existing material, and on every apply re-aligned losslessly to
+the current goals — structure and overview reconciled, the user's prose preserved —
+so it can never silently drift from the goals it documents.
 
 ### Template — `README.md`
 (Outer fence is four backticks so the inner code fences render.)
