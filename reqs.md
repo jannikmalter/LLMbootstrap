@@ -1,6 +1,6 @@
 # LLMbootstrap — Requirements
 
-Status: Active · Updated: 2026-06-23 (R11 as-built requirements implemented in LLMbootstrap.md, block v3; R4/R7/R3 detail files reconciled to the every-run rescan model)
+Status: Active · Updated: 2026-06-23 (R17 confirm-first apply gate added — Apply is now Plan→Confirm→Execute, revising B1's default; R11 as-built requirements; R4/R7/R3 reconciled to the every-run rescan model)
 
 ## Goals
 Why this exists. Everything below traces to one of these.
@@ -48,6 +48,7 @@ One row each. Use "shall". `Type`: F=function, Q=quality, C=constraint.
 | R14 | F    | Apply shall scan the entire project — every markdown file and every code file (incl. TODO/FIXME comments, docstrings) — rather than sampling. Code files are read-only sources; apply never edits them. | M   | G5   | ☑    |
 | R15 | F    | Apply shall align the structure and content of existing markdown/tracking files to the current definition (restructuring them), not merely inject managed `CLAUDE.md` blocks. | M   | G5   | ☑    |
 | R16 | C    | Restructuring shall be lossless: no information present before an apply is deleted or changed in meaning — content is relocated/reformatted, never dropped (no data loss). | M   | G5   | ☑    |
+| R17 | F    | Apply shall, before writing anything, gather all findings and present the user a short confirmation summary of the proposed changes (creations, restructures, installs) with their sources, and proceed only after confirmation — unless the user explicitly opts out ("don't ask"). | M   | G2   | ☑    |
 
 ## Bugs
 Deviations from a requirement. `Ref` = the requirement broken.
@@ -72,4 +73,4 @@ Work items. Reference the ID they advance.
 
 ---
 *Pri:* M/S/C (must/should/could). *Sev:* Hi/Md/Lo. IDs are permanent — never reuse.
-*Detail files: `reqs/<ID>.md` (e.g. `reqs/R3.md`, `reqs/R4.md`, `reqs/R11.md`, `reqs/B1.md`, `reqs/B3.md`).*
+*Detail files: `reqs/<ID>.md` (e.g. `reqs/R3.md`, `reqs/R4.md`, `reqs/R11.md`, `reqs/R17.md`, `reqs/B1.md`, `reqs/B3.md`).*

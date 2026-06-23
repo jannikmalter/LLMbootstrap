@@ -45,28 +45,34 @@ So re-running is always safe, never duplicates, and never loses information.
    managed `CLAUDE.md` block present and at the current version (see *Managed
    blocks*)? This decides whether the module needs to create its working file,
    restructure an existing one, refresh its block, or nothing.
-3. **Structure + align (every run), module by module.** Sweep the *whole* project
-   (within the *sweep scope* below) for the information the module tracks, wherever
-   it lives, and reorganize it into the module's format:
-   - if the module's working file is absent or empty, create it from what you find;
-   - if it exists but does not match the conventions (wrong structure, missing
-     fields, content that belongs in another file), **restructure it in place,
-     losslessly** — relocate and reformat existing content, preserve every user
-     addition (IDs, rows, notes, prose), delete nothing and invent nothing.
-
-   Then **confirm before writing — unless the user has pre-authorized proceeding.**
-   A direct instruction to apply ("apply LLMbootstrap.md", "set up this project",
-   "infer from chat", "don't ask") *is* pre-authorization: write directly and, in
-   the report, state what was changed or inferred and from where so it can be
-   corrected. Absent such authorization (e.g. an unattended run, or a large
-   ambiguous project), present the proposed result — any restructure shown as a
-   diff — with the source of each item, and wait for confirmation. Re-applying is
-   convergent: a file that already matches the conventions is left untouched.
-4. **Install / refresh, module by module, in order.** Ensure scaffolding (dirs)
-   exists, then insert-or-replace the module's managed `CLAUDE.md` block per the
-   *Managed blocks* rules. This phase is fully idempotent and runs on every apply.
-   Never undo a user's edits outside managed blocks.
-5. **Report.** Print a short per-module summary of what happened
+3. **Plan (every run, no writes yet), module by module.** Sweep the *whole* project
+   (within the *sweep scope* below) for the information each module tracks, wherever
+   it lives, and work out — *in memory, writing nothing* — the changes the apply
+   would make:
+   - **Structure + align:** for each module's working file, decide whether it must
+     be created (absent or empty), **restructured in place, losslessly** (present
+     but off-template — relocate and reformat existing content, preserve every user
+     addition: IDs, rows, notes, prose; delete nothing and invent nothing), or left
+     untouched (already compliant).
+   - **Install / refresh:** which scaffolding (dirs) is missing and which managed
+     `CLAUDE.md` blocks need insert / replace (vX→vY) / leave-alone per *Managed
+     blocks*.
+   Compute the full proposed result; do not touch any project file in this step.
+4. **Confirm — present a short summary and wait.** Show the user a *concise* summary
+   of the plan from step 3: per module, what would be created / restructured /
+   installed, the source of each inferred item, and any open questions (implied-but-
+   ambiguous items, never invented entries). Keep it short — counts and the key
+   items, not a full file dump — and offer the full diff on request. **Write nothing
+   until the user confirms.** The only exception is an explicit opt-out ("don't ask",
+   "just do it", "apply without confirming"): then skip the gate, proceed straight to
+   step 5, and report afterwards what was changed and from where so it can be
+   corrected. (A plain "apply"/"execute" is *not* an opt-out — it still gets the gate.)
+5. **Execute, module by module, in order.** Only after confirmation (or under an
+   explicit opt-out): apply the structure/align changes, then ensure scaffolding
+   exists and insert-or-replace the managed `CLAUDE.md` blocks. This phase is
+   idempotent and convergent — a file already matching the conventions is left
+   untouched. Never undo a user's edits outside managed blocks.
+6. **Report.** Print a short per-module summary of what happened
    (structured / aligned / installed / updated vX→vY / unchanged + why).
    See *State report*.
 
@@ -253,10 +259,11 @@ without heavyweight tooling.
   every existing ID, row, and note, never renumber or drop an item, only normalize
   structure and fold in newly-found items. Newly-found statements are *added*; they
   never overwrite an existing row.
-- **Present the proposed `reqs.md` (and any detail files) — restructures shown as a
-  diff — with the source of each item, and confirm before writing** unless
-  pre-authorized (see Apply step 3). Items implied but ambiguous go under an "Open
-  questions" list, not into the tables.
+- **Feed the proposed `reqs.md` (and any detail files) into the confirmation
+  summary** (Apply step 4): list the changes with the source of each item; items
+  implied but ambiguous go under an "Open questions" list, not into the tables.
+  Writing happens only after the user confirms (or under an explicit opt-out); the
+  full diff is available on request.
 - A `reqs.md` that already matches the template is left untouched (convergent).
 
 **Install (every run):**
@@ -436,7 +443,8 @@ the project does and how to use it, derived from the project's goals. Not market
   line with the current goals, but preserve the user's prose — relocate or reword
   for the goals, never delete sections or invent features. If the goals and the
   README now disagree, surface the discrepancy rather than silently rewriting.
-- Confirm before writing unless pre-authorized (see Apply step 3). A `README.md`
+- Feed the proposed README changes into the confirmation summary (Apply step 4);
+  write only after the user confirms (or under an explicit opt-out). A `README.md`
   that already matches the goals and template is left untouched.
 
 **Install (every run):**
