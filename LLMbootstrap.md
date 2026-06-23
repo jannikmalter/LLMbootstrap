@@ -168,6 +168,7 @@ in the block. Bump the `v=` in the block's marker whenever its content changes, 
 1. Requirements & tracking — below.
 2. GitHub README — below.
 3. Working loop — below.
+4. Documentation — below.
 <!-- add further modules here as they are defined -->
 
 ## State report (printed after every run)
@@ -177,6 +178,7 @@ LLMbootstrap apply — <project>
   core           installed               (CLAUDE.md block v1)
   requirements   structured + installed  (reqs.md from 7 sources, CLAUDE.md v2)
   readme         aligned                 (README.md restructured, 0 items lost)
+  docs           outsourced + installed  (info.md from CLAUDE.md, 3 refs→docs/, CLAUDE.md v1)
   <module>       updated v1→v2            (CLAUDE.md block)
   <module>       unchanged               (already matches conventions)
 ```
@@ -248,11 +250,13 @@ without heavyweight tooling.
   anything the code does not make evident is an open question, not a requirement.
   Record provenance (the source file/symbol it was read from) in the item's
   `reqs/<ID>.md` (an **As-built** note) or as an inline `(as-built)` tag, and state
-  in the report that it was inferred from code. **Done semantics:** `Done` means
-  the same thing for every requirement — its acceptance criteria are *verified*. For
-  an as-built item the criteria are written as checks of the existing behavior; the
-  code existing is necessary but not sufficient, so leave it `☐` until those checks
-  are confirmed (e.g. a test exists or you verified each criterion against the code).
+  in the report that it was inferred from code. **Done semantics:** mark an as-built
+  requirement `Done` ☑ when its implementation is present in the code — the code is
+  the evidence. These projects generally carry no test suite; the user verifies by
+  *using* the software and files a `B#` bug when something is wrong, so an
+  implemented requirement is not left open waiting for tests that won't be written.
+  A defect found later becomes a bug, not a reopened requirement. (`Done` = behavior
+  implemented and not known to be broken — see *How it works*.)
 - If `reqs.md` is absent or empty, create it. If it exists but does not match this
   template (missing columns, malformed tables, orphaned `reqs/<ID>.md` files,
   status tracked outside the tables), **restructure it in place, losslessly**: keep
@@ -275,24 +279,24 @@ without heavyweight tooling.
 Insert or replace as a managed block:
 
 ```markdown
-<!-- LLMbootstrap:module=requirements v=3 START — managed block, edit the source not here -->
+<!-- LLMbootstrap:module=requirements v=4 START — managed block, edit the source not here -->
 ## Requirements & tracking
 - Goals, requirements, bugs, todos are tracked in `reqs.md` (overview + source of
   truth for status/priority/severity/trace) and `reqs/<ID>.md` detail files.
 - IDs are stable and never reused: `G#` goals, `R#` requirements
   (Type F=function / Q=quality / C=constraint), `B#` bugs. Todos are checklist lines.
 - Requirements use "shall", are singular and verifiable, and each traces to a goal.
-- You may record requirements for already-built behavior (as-built); `Done` still
-  means acceptance criteria verified against the code, not merely that code exists.
+- `Done` means implemented and not known to be broken — verified by use, not
+  necessarily by a test; a problem found later becomes a `B#` bug, not a reopened
+  requirement. You may record already-built behavior (as-built) and mark it `Done`
+  once the implementation is present in the code (the code is the evidence).
 - An item's tracked status, priority, and severity live ONLY in the `reqs.md`
   tables — the `Done` flag there is authoritative. Detail files (headed
   `# <ID> — <name>`) hold description plus *working* checklists (acceptance
   criteria, fix steps); those checkboxes are progress notes, not the tracked status.
 - Give an item its own `reqs/<ID>.md` file only when it needs detail (repro steps,
   acceptance criteria, design notes). Trivial items stay as table rows / checklist lines.
-- On add/complete/fix: update `reqs.md`. When implementing a requirement, satisfy
-  its acceptance criteria before flipping its `Done` flag. Reference IDs in commits,
-  e.g. `fix(B1): ...`.
+- On add/complete/fix: update `reqs.md`. Reference IDs in commits, e.g. `fix(B1): ...`.
 <!-- LLMbootstrap:module=requirements END -->
 ```
 
@@ -303,14 +307,16 @@ which requirement a bug breaks). `reqs/<ID>.md` files hold only the detail a tab
 row can't — and exist only for items that have such detail. The split keeps the
 stable spec (goals, requirements) separate from high-churn items (bugs, todos) and
 keeps status in exactly one place, so nothing desyncs. The ID is the link between
-the overview row and its detail file. Requirements are written to be verifiable;
-"done" for a feature is defined by its acceptance criteria passing, not by judgment.
-This holds for *reverse-engineered* requirements too: when applying to a codebase
-that was built before its spec, you can record `R#` items describing what the code
-already does (as-built), but `Done` keeps its single meaning — criteria verified.
-Code existing is not the same as a requirement being met, so an as-built item stays
-open until its checks are confirmed. This keeps the `Done` flag's meaning uniform
-across hand-authored and reverse-engineered requirements.
+the overview row and its detail file. Requirements are written to be verifiable, but
+verification here is normally by *using* the software — these projects rarely carry
+a test suite. So `Done` means the behavior is implemented and not known to be broken;
+a problem found later is filed as a `B#` bug rather than reopening the requirement.
+This is what makes as-built requirements practical: when applying to a codebase built
+before its spec, an `R#` recorded from existing code is marked `Done` as soon as its
+implementation is present — the code is the evidence — instead of being parked open
+waiting for tests nobody writes. The `Done` flag therefore means the same thing for
+hand-authored and reverse-engineered requirements: implemented and believed correct,
+with defects tracked as bugs.
 
 ### Template — `reqs.md`
 ```markdown
@@ -552,6 +558,96 @@ reading `reqs.md`. This is what lets context windows be cleared without loss: th
 decisions never lived only in the conversation. It builds directly on Module 1
 (which defines the structure) and Module 0 (which forbids fabricating undocumented
 facts).
+
+---
+
+## Module 4 — Documentation
+
+**Id:** `docs` (block version lives in its marker)
+
+### Purpose
+Keep `CLAUDE.md` focused on rules. Explanatory project documentation — how the code
+works, architecture, design decisions, internal usage — lives in a dedicated
+`info.md` that is **auto-loaded into context alongside `CLAUDE.md`**, and bulky
+reference material (API references, manuals, specs, long-form docs) is consolidated
+under a `docs/` folder. This stops `CLAUDE.md` from bloating into a manual and gives
+documentation one durable home.
+
+### Setup actions
+**Structure + align (every run):**
+- Sweep the *whole* project (per *Sweep scope*) for explanatory documentation: prose
+  in an existing `CLAUDE.md` that explains how the system works (architecture, module
+  walkthroughs, design rationale, internal how-to), plus stray docs and over-long
+  docstrings/header comments that are really documentation rather than code.
+- **Outsource from `CLAUDE.md` into `info.md`, losslessly.** Move explanatory prose
+  out of `CLAUDE.md` into `info.md`; leave behind only the workflow rules, managed
+  blocks, and (optionally) a one-line pointer. Relocate and reformat — never delete,
+  reword beyond formatting, or invent.
+- **Consolidate reference material under `docs/`.** Gather scattered reference
+  material — API references, manuals, specs, design docs, loose `*.md` that are
+  documentation rather than tracking files — into a `docs/` folder, and link them
+  from `info.md`. Move files rather than copy; preserve their content verbatim. Never
+  pull `reqs.md`, `README.md`, or `LLMbootstrap.md` into `docs/` — those are owned by
+  other modules.
+- If `info.md` is absent or empty, create it from what you find (or a short stub for
+  a new project). If it exists but is off-template, align it losslessly.
+- Feed the proposed `info.md`, the moves into `docs/`, and the `CLAUDE.md` trims into
+  the confirmation summary (Apply step 4); write only after confirmation (or under an
+  explicit opt-out). An `info.md`/`docs/` layout already matching the conventions is
+  left untouched.
+
+**Install (every run):**
+- Ensure `info.md` exists (create if absent). Ensure a `docs/` directory exists when
+  there is reference material to hold.
+- Ensure `CLAUDE.md` exists, then insert-or-replace the **CLAUDE.md block** below —
+  which both imports `info.md` so it auto-loads and records where documentation goes.
+
+### CLAUDE.md block
+Insert or replace as a managed block:
+
+```markdown
+<!-- LLMbootstrap:module=docs v=1 START — managed block, edit the source not here -->
+## Documentation
+- Project documentation (how the code works, architecture, design, internal usage)
+  lives in `info.md`, auto-loaded via the import below. Bulky reference material
+  (API references, manuals, specs) lives under `docs/`, linked from `info.md`.
+- Keep `CLAUDE.md` to rules and pointers — put documentation in `info.md` (or
+  `docs/`), never inline here. Update `info.md` when the code's behavior or design
+  changes.
+@info.md
+<!-- LLMbootstrap:module=docs END -->
+```
+
+### How it works
+`CLAUDE.md` is the agent's always-loaded context, so it must stay small and be
+*rules*, not a manual. Claude Code's `@import` lets one auto-loaded file pull in
+another, so `info.md` loads automatically alongside `CLAUDE.md` without being pasted
+into it — documentation gets a dedicated home that is still always in context.
+Reference material too bulky to keep in context every session (API refs, manuals)
+goes under `docs/`, linked from `info.md` and read on demand. This is the internal
+counterpart to Module 2's `README.md`: the README is the short outward-facing
+explanation derived from the goals, while `info.md`/`docs/` hold the detailed
+internal documentation for whoever — human or agent — is working in the code.
+
+### Template — `info.md`
+```markdown
+# <Project> — Internal documentation
+
+Auto-loaded with `CLAUDE.md`. How this project works, for anyone editing it.
+For requirements/status see `reqs.md`; for the outward overview see `README.md`.
+
+## Architecture
+<The major pieces and how they fit together.>
+
+## How it works
+<Key flows / mechanisms, at the level a new contributor needs.>
+
+## Conventions
+<Project-specific patterns worth knowing before editing.>
+
+## Reference
+<Links into `docs/` for API references, manuals, and specs.>
+```
 
 ---
 

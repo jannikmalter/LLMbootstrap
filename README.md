@@ -73,6 +73,9 @@ Current modules:
 - **Working loop** — reconcile every change with `reqs.md` before implementing it,
   work from the tracked files rather than memory, and keep them current so no state
   lives only in the chat.
+- **Documentation** — keep `CLAUDE.md` to rules; explanatory documentation lives in
+  an auto-loaded `info.md`, and reference material (API references, manuals) is
+  consolidated under a `docs/` folder.
 
 ## License
 TBD

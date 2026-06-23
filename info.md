@@ -1,0 +1,1 @@
+This is a project building a bootstrap file for project initialization and restructurization. Don't get confused, "LLMbootstrap.md" is our code, not our guide. We build "LLMbootstrap.md". We might apply the file to this project itself, but during normal operation, this is our patient.

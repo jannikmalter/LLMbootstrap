@@ -1,6 +1,4 @@
-This is a project building a bootstrap file for project initialization and restructurization. Don't get confused, "LLMbootstrap.md" is our code, not our guide. We build "LLMbootstrap.md". We might apply the file to this project itself, but during normal operation, this is our patient.
-
-
+@info.md
 <!-- LLMbootstrap:module=core v=1 START — managed block, edit the source not here -->
 ## Project conventions (managed by LLMbootstrap)
 - This project's workflow is defined by `LLMbootstrap.md`. The blocks between
@@ -12,24 +10,24 @@ This is a project building a bootstrap file for project initialization and restr
   something is implied but ambiguous, raise it as an open question.
 <!-- LLMbootstrap:module=core END -->
 
-<!-- LLMbootstrap:module=requirements v=3 START — managed block, edit the source not here -->
+<!-- LLMbootstrap:module=requirements v=4 START — managed block, edit the source not here -->
 ## Requirements & tracking
 - Goals, requirements, bugs, todos are tracked in `reqs.md` (overview + source of
   truth for status/priority/severity/trace) and `reqs/<ID>.md` detail files.
 - IDs are stable and never reused: `G#` goals, `R#` requirements
   (Type F=function / Q=quality / C=constraint), `B#` bugs. Todos are checklist lines.
 - Requirements use "shall", are singular and verifiable, and each traces to a goal.
-- You may record requirements for already-built behavior (as-built); `Done` still
-  means acceptance criteria verified against the code, not merely that code exists.
+- `Done` means implemented and not known to be broken — verified by use, not
+  necessarily by a test; a problem found later becomes a `B#` bug, not a reopened
+  requirement. You may record already-built behavior (as-built) and mark it `Done`
+  once the implementation is present in the code (the code is the evidence).
 - An item's tracked status, priority, and severity live ONLY in the `reqs.md`
   tables — the `Done` flag there is authoritative. Detail files (headed
   `# <ID> — <name>`) hold description plus *working* checklists (acceptance
   criteria, fix steps); those checkboxes are progress notes, not the tracked status.
 - Give an item its own `reqs/<ID>.md` file only when it needs detail (repro steps,
   acceptance criteria, design notes). Trivial items stay as table rows / checklist lines.
-- On add/complete/fix: update `reqs.md`. When implementing a requirement, satisfy
-  its acceptance criteria before flipping its `Done` flag. Reference IDs in commits,
-  e.g. `fix(B1): ...`.
+- On add/complete/fix: update `reqs.md`. Reference IDs in commits, e.g. `fix(B1): ...`.
 <!-- LLMbootstrap:module=requirements END -->
 
 <!-- LLMbootstrap:module=readme v=1 START — managed block, edit the source not here -->

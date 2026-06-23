@@ -1,6 +1,6 @@
 # LLMbootstrap — Requirements
 
-Status: Active · Updated: 2026-06-23 (R17 confirm-first apply gate added — Apply is now Plan→Confirm→Execute, revising B1's default; R11 as-built requirements; R4/R7/R3 reconciled to the every-run rescan model)
+Status: Active · Updated: 2026-06-23 (R11 as-built Done = implementation present, no-test-suite model: found requirements are marked done when the code implements them, defects become bugs; G6 + R18 documentation module: auto-loaded info.md + docs/ consolidation; R17 confirm-first apply gate; R4/R7/R3 reconciled to the every-run rescan model)
 
 ## Goals
 Why this exists. Everything below traces to one of these.
@@ -16,6 +16,9 @@ Why this exists. Everything below traces to one of these.
 - **G5** — Treat applying as a maximum-effort alignment: scan the whole project —
   every markdown file and every code file — and align both the *structure* and the
   *content* of the project to the current `LLMbootstrap.md` definition, losslessly.
+- **G6** — Keep `CLAUDE.md` lean and rules-focused: hold explanatory project
+  documentation in a dedicated, auto-loaded `info.md`, and consolidate reference
+  material (API references, manuals) under a `docs/` folder.
 
 ## Out of scope
 What this deliberately will *not* do (stops scope creep).
@@ -42,13 +45,14 @@ One row each. Use "shall". `Type`: F=function, Q=quality, C=constraint.
 | R8  | F    | The agent shall print a per-module state report after each run.                    | S   | G2   | ☑    |
 | R9  | F    | The file shall be organized as ordered, self-contained modules with a defined structure. | M   | G1   | ☑    |
 | R10 | Q    | `CLAUDE.md` blocks shall stay short; detail and rationale live in `LLMbootstrap.md`. | S   | G1   | ☑    |
-| R11 | F    | The system shall support recording requirements that describe already-implemented work (reverse-engineered spec), with defined "done" semantics. | S   | G1   | ☑    |
+| R11 | F    | The system shall support recording requirements for already-implemented work (as-built) and mark such a requirement done when its implementation is present in the code (no test required; defects become bugs). | S   | G1   | ☑    |
 | R12 | F    | The system shall provide a module that generates/maintains a GitHub `README.md` inferred from the project's goals — a technical document covering function and usage. | S   | G1   | ☑    |
 | R13 | F    | The system shall provide a working-loop module: every change is reconciled with `reqs.md` before implementation, no work is done from memory, and all goals/decisions/tasks are documented so a cleared context or new chat loses no state. | M   | G4   | ☑    |
 | R14 | F    | Apply shall scan the entire project — every markdown file and every code file (incl. TODO/FIXME comments, docstrings) — rather than sampling. Code files are read-only sources; apply never edits them. | M   | G5   | ☑    |
 | R15 | F    | Apply shall align the structure and content of existing markdown/tracking files to the current definition (restructuring them), not merely inject managed `CLAUDE.md` blocks. | M   | G5   | ☑    |
 | R16 | C    | Restructuring shall be lossless: no information present before an apply is deleted or changed in meaning — content is relocated/reformatted, never dropped (no data loss). | M   | G5   | ☑    |
 | R17 | F    | Apply shall, before writing anything, gather all findings and present the user a short confirmation summary of the proposed changes (creations, restructures, installs) with their sources, and proceed only after confirmation — unless the user explicitly opts out ("don't ask"). | M   | G2   | ☑    |
+| R18 | F    | The system shall provide a documentation module that maintains an auto-loaded `info.md` for explanatory project docs (referenced from `CLAUDE.md` with the rule to keep docs out of it), outsources existing explanatory docs from `CLAUDE.md` into `info.md` on apply, and consolidates scattered reference material under a `docs/` folder — all losslessly. | S   | G6   | ☑    |
 
 ## Bugs
 Deviations from a requirement. `Ref` = the requirement broken.
@@ -73,4 +77,4 @@ Work items. Reference the ID they advance.
 
 ---
 *Pri:* M/S/C (must/should/could). *Sev:* Hi/Md/Lo. IDs are permanent — never reuse.
-*Detail files: `reqs/<ID>.md` (e.g. `reqs/R3.md`, `reqs/R4.md`, `reqs/R11.md`, `reqs/R17.md`, `reqs/B1.md`, `reqs/B3.md`).*
+*Detail files: `reqs/<ID>.md` (e.g. `reqs/R3.md`, `reqs/R4.md`, `reqs/R11.md`, `reqs/R17.md`, `reqs/R18.md`, `reqs/B1.md`, `reqs/B3.md`).*
