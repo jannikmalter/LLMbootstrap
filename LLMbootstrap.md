@@ -20,16 +20,22 @@ project's own files, never duplicated.
   changing code, scan `reqs.md` and update affected items.
 - **Don't work from memory or invent facts.** Goals, requirements, decisions, and
   tasks live in `reqs.md` / `reqs/`; if it isn't written there, it isn't decided.
-  Record only what is actually established; raise anything ambiguous, out of
-  scope, or conflicting as an open question instead of guessing.
+  Record only what is actually established; anything ambiguous, out of scope, or
+  conflicting goes into the **Open questions** section of `reqs.md` instead of
+  being guessed at — asking in chat is not enough, since the chat is scratch.
 - **Follow standard requirements-engineering principles** — kept simple and
   concise, since this is a solo project.
 
 ## Where things live
 
-- **`reqs.md`** (+ `reqs/<ID>.md`) — goals, requirements, bugs, todos, and their
-  status; the single source of truth for what's decided.
+- **`reqs.md`** (+ `reqs/<ID>.md`) — goals, requirements, bugs, todos, open
+  questions, and their status; the single source of truth for what's decided —
+  and for what's still undecided.
 - **`todo.md`** — the development plan; each item references the ID it advances.
+- **`changelog.md`** — the chronological record of notable changes, newest first.
+  Deliberately a separate file: `reqs.md` stays small enough to keep in context
+  every session, while the changelog may grow freely and is read on demand — when
+  you need to know how or why the project reached its current state.
 - **`info.md`** — how the code works: architecture, design, internal how-to.
   Auto-loaded alongside `CLAUDE.md` via the `@info.md` import (on agents without
   import support, link it from `CLAUDE.md` instead).
@@ -43,13 +49,35 @@ project's own files, never duplicated.
 
 ## Active alignment
 
-Sometimes you need to actively scan the whole project and bring it into line with
-this file — e.g. when this file is first added to an existing project, or when new
-information has been dumped into the project folder. Organize all existing
-information according to these conventions. This must be **lossless and
-accurate**: lose no information and invent nothing. Expect requirement records to
-be sparse or absent — infer them from the code (tag such items `(as-built)`). When
-in doubt, ask the user.
+Sometimes the whole project must be actively brought into line with this file —
+when it is first added to an existing project, or when new information has been
+dumped into the project folder since the last alignment. The operation is
+**lossless and accurate**: lose no information, invent nothing. Work through
+these steps in order; for a small re-alignment, scope the inventory to what is
+new or changed.
+
+1. **Inventory.** List every file and fragment that carries project
+   information — code, docs, READMEs, TODO/FIXME comments, scratch notes,
+   half-finished lists. Nothing is moved before it is on the list; the list is
+   what losslessness is checked against in step 5.
+2. **Classify.** Decide each item's kind: goal, requirement, bug, todo, open
+   question, change history, internal design, bulky reference, outward overview,
+   or LLM note. The kind determines the home ("Where things live" above).
+3. **Reconstruct the records.** Fill `reqs.md` and its companions:
+   - Recorded requirements and plans move over with their meaning intact —
+     rephrase to "shall" form, but change no content.
+   - Behavior evident in the code but recorded nowhere becomes an `R#` row
+     tagged `(as-built)`, marked Done — the code is the evidence.
+   - Stated intentions become todos; known defects become bugs; anything
+     ambiguous or conflicting becomes an open question — never a guess.
+4. **Relocate, don't rewrite.** Move content to its home preserving meaning;
+   merge only exact duplicates and keep original wording when unsure. Detail
+   too bulky for its home goes to `docs/` — it is never summarized away.
+5. **Account for everything.** Walk the inventory: every item is now relocated
+   (note where), deliberately left in place (note why), or raised as an open
+   question. Only a fully absorbed source file may be deleted.
+6. **Record the apply.** Add a `changelog.md` entry, update the `reqs.md`
+   date, and report the open questions to the user.
 
 
 
@@ -78,8 +106,15 @@ Conventions:
   does, trace it to a goal) and mark it `Done` once the implementation is
   present — the code is the evidence. Note its source file/symbol in the detail
   file or with an inline `(as-built)` tag.
-- On any add / complete / fix, update `reqs.md`. Reference IDs in commits, e.g.
-  `fix(B1): ...`.
+- Open questions live in the `reqs.md` **Open questions** section: record one the
+  moment something is ambiguous, conflicting, or underspecified — it blocks
+  guessing, not all work, so continue with whatever is unaffected. Questions tied
+  to a single item stay in that item's `reqs/<ID>.md`. When the user answers,
+  fold the answer into the proper record (requirement, goal, detail file) and
+  remove the question; the resolution is noted in `changelog.md`, not kept in
+  the list.
+- On any add / complete / fix, update `reqs.md` and append a line to
+  `changelog.md`. Reference IDs in commits, e.g. `fix(B1): ...`.
 
 ### Template — `reqs.md`
 
@@ -116,7 +151,11 @@ Deviations from a requirement. `Ref` = the requirement broken.
 |----|--------------------------------------|-----|-----|------|
 | B1 | Non-ASCII filename corrupts on save. | R2  | Hi  | ☐    |
 
+## Open questions
+Ambiguities awaiting the user's decision — recorded here instead of guessed at.
+Remove once answered, folding the answer into the records above.
 
+- Keep deleted notes in a trash folder, or delete permanently? (affects R2)
 
 ---
 *Pri:* M/S/C (must/should/could). *Sev:* Hi/Md/Lo. IDs are permanent — never reuse.
@@ -196,6 +235,30 @@ Work items. Reference the ID they advance.
 - [ ] Write deploy notes.
 - [x] Add atomic-write test. (R4)
 
+```
+
+## changelog.md — the change record
+
+`reqs.md` shows only the *current* state; `changelog.md` preserves the
+*trajectory* — what changed and why, in order. Append one line per notable
+change: a todo completed, a bug fixed, a requirement or goal added or changed, a
+design decision that alters behavior. Newest first, referencing IDs.
+
+The changelog lives in its own file, **not** inside `reqs.md`: it is the one
+record that grows without bound, so it must not weigh down the always-loaded
+overview. Do not load it by default — read it on demand when history matters,
+and never treat it as tracked status (`reqs.md` remains authoritative).
+
+### Template — `changelog.md`
+
+```markdown
+# Changelog
+
+Newest first. One line per notable change; reference IDs.
+
+- 2025-07-02 — Implemented full-text search backend. (R3)
+- 2025-06-30 — Fixed non-ASCII filename corruption. (B1)
+- 2025-06-28 — Widened R3 to include tag search; added B1.
 ```
 
 

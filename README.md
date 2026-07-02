@@ -6,9 +6,10 @@ structure — without losing state when its context is cleared.
 
 ## What it gives you
 - **One home per kind of information** — requirements and status in `reqs.md`
-  (+ `reqs/<ID>.md`), the development plan in `todo.md`, internal design in
-  `info.md`, bulky reference in `docs/`, the outward overview in `README.md`, and
-  minimal agent notes in `CLAUDE.md`.
+  (+ `reqs/<ID>.md`), the development plan in `todo.md`, change history in
+  `changelog.md` (read on demand), internal design in `info.md`, bulky reference
+  in `docs/`, the outward overview in `README.md`, and minimal agent notes in
+  `CLAUDE.md`.
 - **Durable memory** — goals, requirements, decisions, and tasks live in files,
   not the chat, so clearing context loses nothing.
 - **Lightweight requirements engineering** — stable IDs, "shall" requirements, and
