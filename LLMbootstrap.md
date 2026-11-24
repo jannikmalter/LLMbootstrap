@@ -1,174 +1,147 @@
 # LLMbootstrap.md — the workflow definition
 
-This file is the single source of truth for the structure, workflow, and rules
-an LLM follows in this project. All work shall be performed in accordance with it.
+This file defines the structure, workflow, and rules an LLM agent follows in a project,
+so that the agent builds what the user decided, nothing important depends on the chat,
+and the process costs little effort and context.
 
-`CLAUDE.md` imports this file automatically. Keep `CLAUDE.md` minimal — only
-LLM-specific notes go there; everything else is defined here and augmented in the
-project's own files, never duplicated.
-
+Each project's `CLAUDE.md` points to this file — usually to one shared copy — and imports
+the project's own `@reqs.md` and `@info.md`. Outside its own repository, never change
+this file: other projects share it. Don't repeat its rules in project files.
 
 ## Working principles
 
-- **`reqs.md` is the project's durable memory; the chat is scratch.** `CLAUDE.md`
-  imports it so every session starts with it in context; if it is not in your
-  context, read it before doing anything else. Keep it current as you go so
-  clearing the context or starting a new chat loses nothing.
-- **Reconcile before changing anything.** Check each request against `reqs.md`
-  first: if it fits the existing goals and requirements, proceed; if it's new, add
-  the requirement/bug (or goal) first — or a todo in `todo.md`, if it is only a
-  work item; if it changes one, edit that item first. Implement only once the
-  records reflect the intended change and the user has accepted it. After changing
-  code, scan the records and update affected items.
-- **Don't work from memory or invent facts.** What the project shall do is decided
-  in `reqs.md` / `reqs/`, how it is built in `info.md`, what is to be worked on in
-  `todo.md`; if it isn't written there, it isn't decided. Record only what is
-  actually established; anything ambiguous, out of scope, or conflicting goes into
-  the **Open questions** section of `reqs.md` instead of being guessed at — asking
-  in chat is not enough, since the chat is scratch.
-- **Follow standard requirements-engineering principles** — kept simple and
-  concise, since this is a solo project.
+- **The records are the memory; the chat is scratch.** If `reqs.md` or `info.md` is not
+  in your context, read it before doing anything else. Keep the records current as you
+  go, so that a new session loses nothing. When work stays unfinished, note in `todo.md`
+  where it stands and what comes next.
+- **Reconcile before changing anything.** Check each request against `reqs.md`: if it
+  fits, proceed; if it is new, add the requirement or bug first (or a todo, if it is only
+  a work item); if it changes something, edit that first. Implement only what the records
+  state and the user has accepted. After changing code, update the affected records.
+- **Don't invent.** What the project shall do is decided in `reqs.md` / `reqs/`, how it is
+  built in `info.md`, what to work on in `todo.md`; what isn't written there isn't
+  decided. Record only what is established. Anything ambiguous, conflicting, or
+  underspecified becomes an open question in `reqs.md` — asking in chat is not enough. It
+  blocks guessing, not work: continue with whatever is unaffected. Keep project facts out
+  of your built-in memory; they belong in these records.
+- **Heal what you come across.** When the structure or records contradict each other or
+  this file, are stale, misplaced, or broken, fix them without being asked:
+  - *Unambiguous* — exactly one fix follows from this file, the records, or the code, and
+    it changes no decision: fix it, add a changelog line, tell the user briefly.
+  - *In doubt*, including doubt about which case it is — add an open question, finish what
+    is unaffected, ask at the end, and fix it once the user has confirmed.
+  - Always in doubt, unless this file prescribes it: accepting or dropping anything,
+    changing what a goal or requirement means, choosing between conflicting statements,
+    deleting a file.
+  - Move text verbatim: write it to its new home first, then remove it from the old one.
+  - Never heal this file or the code; code that deviates from a requirement becomes a bug.
+    If the user asked only to look or explain, report instead of fixing.
 
 ## Where things live
 
-- **`reqs.md`** (+ `reqs/<ID>.md`) — goals, requirements, bugs, open questions,
-  and their status; the single source of truth for what the project shall do —
-  and for what's still undecided. Auto-loaded via the `@reqs.md` import in
-  `CLAUDE.md`; the `reqs/<ID>.md` detail files are read on demand.
-- **`todo.md`** — the development plan and the only home for todos; each item
-  references the ID it advances, if any. Read it when planning, choosing, or
-  resuming work.
-- **`changelog.md`** — the chronological record of notable changes, newest first.
-  Deliberately a separate file: `reqs.md` stays small enough to keep in context
-  every session, while the changelog may grow freely and is read on demand — when
-  you need to know how or why the project reached its current state.
-- **`info.md`** — how the code works: architecture, design decisions and their
-  reasons, internal how-to. Design notes tied to a single item stay in its
-  `reqs/<ID>.md`.
-  Auto-loaded alongside `CLAUDE.md` via the `@info.md` import (on agents without
-  import support, link it from `CLAUDE.md` instead).
-- **`docs/`** — bulky reference material (API refs, manuals, specs), linked from
-  `info.md` and read on demand.
-- **`README.md`** — the outward, technical overview for GitHub: what the project
-  is, plus concise operating guidance.
-- **`CLAUDE.md`** — minimal LLM-specific notes; imports this file, `reqs.md`, and
-  `info.md`.
-- **`alignment.md`** — temporary working file that exists only during an active
-  alignment (below).
-- **This file** — rules and pointers only; put documentation in `info.md`, not here.
+- **`reqs.md`** (+ `reqs/<ID>.md`) — goals, scope, requirements, bugs, open questions: what
+  the project shall do, and what is undecided. Loaded every session; detail files are
+  read on demand.
+- **`info.md`** — how it is built: architecture, design decisions and their reasons,
+  internal how-to. Loaded every session.
+- **`todo.md`** — the work plan and the only home for todos. Read it when planning,
+  choosing, or resuming work.
+- **`changelog.md`** — all history. May grow freely; read it only when history matters.
+- **`docs/`** — reference material too bulky to load every session, linked from `info.md`.
+- **`README.md`** — the short outward overview: what the project is and how to use it.
+- **`CLAUDE.md`** — the pointers above and minimal LLM-specific notes, nothing else.
+- **`alignment.md`** — working file that exists only during an alignment.
 
+## Starting a project
+
+In a new project, ask the user for its purpose, goals, and what is out of scope, then
+create `CLAUDE.md`, `reqs.md`, `todo.md`, `changelog.md`, and `info.md` from what they
+say. Don't fill gaps yourself. In an existing project, run an alignment.
 
 ## Active alignment
 
-Sometimes the whole project must be actively brought into line with this file —
-when it is first added to an existing project, or when new information has been
-dumped into the project folder since the last alignment. The operation is
-**lossless and accurate**: lose no information, invent nothing. Code files are
-read-only sources: a TODO comment is copied into the records and stays in the
-code. Work through these steps in order; for a small re-alignment, scope the
-inventory to what is new or changed. If `alignment.md` already exists, an earlier
-alignment was interrupted — resume from it.
+Alignment is the full sweep that brings a whole project into line with this file — when
+it is first applied to an existing project, or when new information has been dumped into
+the project folder. It is **lossless and accurate**: lose no information that still holds,
+invent nothing. What is outdated may be dropped if the plan lists it and the changelog
+says what went and why. Code files are read-only sources: a TODO comment is copied into
+the records and stays in the code. For a small re-alignment, inventory only what is new or
+changed. If `alignment.md` already exists, resume that alignment.
 
-1. **Inventory.** List in `alignment.md` every file and fragment that carries
-   project information — code, docs, READMEs, TODO/FIXME comments, scratch notes,
-   half-finished lists. Read rather than sample, but skip dependency, build, VCS,
-   and generated files. Nothing is moved before it is on the list; the list is
-   what losslessness is checked against in step 6.
-2. **Classify.** Decide each item's kind: goal, requirement, bug, todo, open
-   question, change history, internal design (including design decisions), bulky
-   reference, outward overview, or LLM note. The kind determines the home ("Where
-   things live" above). Note the planned home next to each item, and list every
-   file to be deleted.
-3. **Confirm.** Up to here, write nothing but `alignment.md` — open questions wait
-   there too. Show the user a short summary of what will be created, moved,
-   restructured, and deleted, plus the open questions, and wait for their OK.
-   Skip the wait only if the user explicitly said not to ask; a plain request to
-   align is not that. Note the OK in `alignment.md`; any later departure from the
-   plan is confirmed the same way.
-4. **Reconstruct the records.** Fill `reqs.md` and its companions, and make sure
-   `CLAUDE.md` imports `reqs.md` and `info.md`:
-   - Recorded requirements and plans move over with their meaning intact —
-     rephrase to "shall" form, but change no content.
-   - Behavior evident in the code but recorded nowhere becomes an `R#` row
-     tagged `(as-built)`, status `Proposed`. Requirements the project's own
-     documents already state are `Accepted`, or `Implemented` if evidently built.
-   - A `Done` column is converted to `Status` (rule under "reqs.md" below).
-   - Stated intentions become todos; known defects become bugs; anything
-     ambiguous or conflicting becomes an open question — never a guess.
-5. **Relocate, don't rewrite.** Move content to its home preserving meaning;
-   merge only exact duplicates and keep original wording when unsure. Detail
-   too bulky for its home goes to `docs/` — it is never summarized away.
-6. **Account for everything.** Walk the inventory: every item is now relocated
-   (note where), deliberately left in place (note why), or raised as an open
-   question. Delete a source file only if it is fully absorbed *and* its deletion
-   was listed in the plan.
-7. **Record the apply.** Add a `changelog.md` entry, update the `reqs.md`
-   date, and report the open questions and `Proposed` items to the user for a
-   decision. Keep `alignment.md` until the user accepts the result, then delete it;
-   accepting the result does not by itself accept the `Proposed` items.
-
-
+1. **Inventory.** Write `alignment.md` — always, even if the user waives confirmation. List
+   every file and fragment that carries project information: code, docs, READMEs, TODO
+   comments, scratch notes. Read rather than sample, but skip dependency, build, VCS, and
+   generated files. Text that will move or be dropped is listed sentence by sentence.
+2. **Classify.** Next to each item, note its kind (goal, requirement, bug, todo, open
+   question, history, design, reference, overview, LLM note) and its planned home. List
+   every file to be deleted and all content to be dropped.
+3. **Confirm.** Up to here, write nothing but `alignment.md`. Show the user a short summary:
+   what will be created, moved, dropped, and deleted, which requirements are taken over,
+   and the open questions. Wait for their OK; skip the wait only if they explicitly said
+   not to ask. Departing from the plan later needs a new OK.
+4. **Reconstruct.** Fill the records, and make `CLAUDE.md` import `reqs.md` and `info.md`.
+   - Requirements stated in the project's documents keep their meaning, in "shall" form.
+     The OK in step 3 accepts those the summary listed; without it they are `Proposed`.
+   - Behavior evident only in code becomes `(as-built)` and `Proposed`.
+   - Stated intentions become todos, known defects bugs, anything unclear an open question.
+5. **Relocate, don't rewrite.** Preserve wording when unsure; merge only exact duplicates.
+   What is too bulky for its home goes to `docs/`, never summarized away.
+6. **Account.** Mark every item in `alignment.md` with where it now is, why it stayed, that
+   it was dropped as planned, or which open question covers it. Open the new home and find
+   the sentence there before marking it as moved. Only then delete files, and only those
+   in the plan.
+7. **Record.** Add a changelog entry, naming any source that is not a file (such as a
+   chat), and report open questions and `Proposed` items. Leave
+   `alignment.md` in place until the user has accepted the result, then delete it. Accepting
+   the result does not accept the `Proposed` items.
 
 ## reqs.md — requirements & tracking
 
-Track goals, requirements, and bugs with stable IDs and light
-traceability — no heavyweight tooling, just two markdown layers:
+Standard requirements engineering, kept simple: `reqs.md` is the overview; a detail file
+`reqs/<ID>.md` exists only for items that need one.
 
-- **`reqs.md`** — the at-a-glance overview and the single source of truth for
-  status, priority, severity, and which goal each item serves.
-- **`reqs/<ID>.md`** — a detail file *only* for items that need one (repro steps,
-  acceptance criteria, design notes). Trivial items stay as table rows.
-
-Conventions:
-
-- IDs are stable and never reused: `G#` goals, `R#` requirements (Type
-  F=function / Q=quality / C=constraint), `B#` bugs.
-- Requirements use "shall", are singular and verifiable, and each traces to a goal.
-- Tracked status, priority, and severity live **only** in the `reqs.md` tables —
-  the `Status` column there is authoritative. Checkboxes inside a `reqs/<ID>.md`
-  are working notes (acceptance criteria, fix steps), not the tracked status.
-- Requirement status:
-  - `Proposed` — written down by the agent, not yet confirmed by the user.
-  - `Accepted` — the user wants it. Only the user accepts; an explicit request for
-    it counts, the agent's own inference does not. Implement only what is accepted.
-  - `Implemented` — built and not known to be broken.
-  - `Verified` — built and *observed* to meet the requirement, by use or by a test;
-    note how in the detail file or the changelog. The agent may set it only for
-    what it or the user has actually observed, never from reading the code alone.
-  - `Dropped` — no longer wanted, or replaced. The row and ID stay; note the reason
-    or the successor in the row.
-- Changing what an accepted requirement means also needs the user's acceptance, and
-  returns it to `Accepted` until the change is built. Mere rewording does not.
-- Bug status: `Open`, `Fixed`, `Verified` (the fix was observed to work), `Dropped`
-  (won't fix; note why in the row). A problem found in a built requirement becomes
-  a `B#` bug; the requirement keeps its status.
-- You may record already-built behavior as an `R#` (describe what the code does,
-  trace it to a goal), tagged `(as-built)` with its source file/symbol in the row or
-  detail file. It starts as `Proposed`: code proves what happens, not that it is
-  wanted. Once the user accepts it, it is `Implemented`.
-- A table that still has a `Done` column (older format) is converted at the next
-  alignment. Requirements: ☐ → `Accepted`, ☑ → `Implemented`, but any `(as-built)`
-  → `Proposed`. Bugs: ☐ → `Open`, ☑ → `Fixed`. Until then, read it that way.
-- Open questions live in the `reqs.md` **Open questions** section: record one the
-  moment something is ambiguous, conflicting, or underspecified — it blocks
-  guessing, not all work, so continue with whatever is unaffected. Questions tied
-  to a single item stay in that item's `reqs/<ID>.md`. When the user answers,
-  fold the answer into the proper record (requirement, goal, detail file, or
-  `info.md` for a design decision) and remove the question; the resolution is
-  noted in `changelog.md`, not kept in the list.
-- On any add / complete / fix, update the affected record (`reqs.md`, `todo.md`,
-  `info.md`) and add a line to `changelog.md`. Reference IDs in commits, e.g.
-  `fix(B1): ...`.
+- **Current state only** — no history in rows, prose, or footnotes, and no prose between
+  the tables. Test: would this sentence be needed if the project had always been in its
+  current state? If not, it belongs in `changelog.md`. A reason still needed for the work
+  goes in `reqs/<ID>.md`, or `info.md` for a design decision.
+- **What is over leaves.** When the user drops a requirement, or a bug's fix has been
+  observed to work (or the user won't have it fixed), delete its row and detail file and
+  add a changelog line saying what went and why.
+- **IDs:** `G#` goals, `R#` requirements (Type F=function / Q=quality / C=constraint), `B#`
+  bugs. Don't renumber; take new ones from the `Next IDs` line, so none is reused.
+- **Requirements** use "shall", are singular and verifiable, and trace to a goal. Their
+  priority is `?` until the user states one.
+- **Status** lives only in the tables; checkboxes in a detail file are working notes.
+  - `Proposed` — written by the agent, not confirmed by the user.
+  - `Accepted` — the user wants it. Only the user accepts or drops; an explicit request
+    counts, the agent's inference does not.
+  - `Implemented` — built. Known deviations are listed as bugs.
+  - `Verified` — *observed* to meet the requirement, by use or test, never from reading
+    code alone; note how in the detail file or changelog.
+  - Bugs: `Open`, then `Fixed` until the fix has been observed to work.
+- **Changing what an accepted requirement means** needs acceptance again and returns it to
+  `Accepted` until built. Rewording does not.
+- **As-built:** existing behavior may be recorded with its source, tagged `(as-built)`. It
+  is `Proposed`, since code proves what happens, not that it is wanted; once accepted, it
+  is `Implemented`.
+- **Open questions:** those about a single item may stay in its detail file. Once answered,
+  move the answer to its proper record, note it in the changelog, remove the question.
+- **Every change** updates the affected record and adds a changelog line. Reference IDs in
+  commits, e.g. `fix(B1): ...`.
+- **Older formats** are converted only in an alignment; until then read `Done` ☑ as
+  `Implemented`, ☐ as `Accepted` (bugs: `Fixed`, `Open`). Converted requirements are taken
+  over as in step 4, as-built ones as `Proposed`. Dropped items, finished todos, and
+  history move to the changelog; a missing `Next IDs` line is added.
 
 ### Template — `reqs.md`
 
 ```markdown
 # <PROJECT> — Requirements
 
-Status: Active · Updated: <date>
-
 ## Goals
 Why this exists. Everything below traces to one of these.
+
+Purpose: one sentence.
 
 - **G1** — One-line goal.
 - **G2** — One-line goal.
@@ -188,8 +161,7 @@ One row each. Use "shall". `Type`: F=function, Q=quality, C=constraint.
 | R3 | F    | The system shall return every note that contains the search term.      | S   | G2   | Accepted    |
 | R4 | Q    | The system shall return search results within 1 s for 10k notes (p95). | S   | G2   | Accepted    |
 | R5 | C    | The system shall run on Python 3.11 or later.                          | M   | G1   | Verified    |
-| R6 | F    | The system shall delete a note on request. (as-built: `notes.delete`)  | S   | G1   | Proposed    |
-| R7 | F    | The system shall find notes by filename. (replaced by R3)              | C   | G2   | Dropped     |
+| R6 | F    | The system shall delete a note on request. (as-built: `notes.delete`)  | ?   | G1   | Proposed    |
 
 ## Bugs
 Deviations from a requirement. `Ref` = the requirement broken.
@@ -205,9 +177,9 @@ Remove once answered, folding the answer into the records above.
 - Keep deleted notes in a trash folder, or delete permanently? (affects R6)
 
 ---
-*R status:* Proposed → Accepted → Implemented → Verified, or Dropped.
-*B status:* Open → Fixed → Verified, or Dropped.
-*Pri:* M/S/C (must/should/could). *Sev:* Hi/Md/Lo. IDs are permanent — never reuse.
+*R status:* Proposed → Accepted → Implemented → Verified. *B status:* Open → Fixed.
+*Pri:* M/S/C (must/should/could), ? = not set by the user. *Sev:* Hi/Md/Lo.
+*Next IDs:* G3, R8, B2 — removed IDs are not reused.
 *Detail files: `reqs/<ID>.md` (e.g. `reqs/R3.md`, `reqs/B1.md`).*
 ```
 
@@ -272,61 +244,32 @@ Suspected: filename encoded with the wrong codec on the write path.
 - [ ] Regression test with non-ASCII names.
 ```
 
-## todo.md — the development plan
+## todo.md — the work plan
 
-Todos live only here, as checklist lines without IDs of their own; a checked box
-is a finished work item, not the status of the requirement it advances.
-
-### Template — `todo.md`
+Lines without IDs of their own. Unfinished work only: delete an item once it is done and
+in the changelog.
 
 ```markdown
 # Todos
 
-Work items. Reference the ID they advance.
+Work items. Reference the ID they advance, if any.
 
-- [ ] Implement search backend. (R3)
+- [ ] Implement search backend. (R3) — index works; next: update it on delete.
 - [ ] Write deploy notes.
-- [x] Add atomic-write test. (R2)
-
 ```
 
 ## changelog.md — the change record
 
-`reqs.md` shows only the *current* state; `changelog.md` preserves the
-*trajectory* — what changed and why, in order. Add one line per notable
-change: a todo completed, a bug fixed, a requirement or goal added or changed, a
-design decision that alters behavior. Newest first, referencing IDs.
-
-The changelog lives in its own file, **not** inside `reqs.md`: it is the one
-record that grows without bound, so it must not weigh down the always-loaded
-overview. Do not load it by default — read it on demand when history matters,
-and never treat it as tracked status (`reqs.md` remains authoritative).
-
-### Template — `changelog.md`
+One line per notable change, with its reason if known, newest first: a todo completed, a
+bug fixed, a goal, requirement, or design decision added, changed, or dropped. Never load
+it by default, never treat it as status.
 
 ```markdown
 # Changelog
 
 Newest first. One line per notable change; reference IDs.
 
-- 2025-07-02 — Implemented full-text search backend. (R3)
-- 2025-06-30 — Fixed non-ASCII filename corruption. (B1)
-- 2025-06-28 — Accepted R3, dropped R7 in its favor; added B1.
+- 2025-06-30 — Dropped R7 ("find notes by filename"): covered by full-text search. (R3)
+- 2025-06-29 — Accepted full-text search. (R3)
+- 2025-06-28 — Found B1: saving a note with a non-ASCII filename corrupts it.
 ```
-
-
----
-
-## info.md & docs/ — internal documentation
-
-`info.md` is the internal counterpart to `README.md`: the README is the short
-outward explanation derived from the goals, while `info.md` (with `docs/` for
-bulk) holds the detailed internal documentation for whoever — human or agent —
-works in the code.
-
-- Keep explanatory prose in `info.md`; never let it pile up in `CLAUDE.md`.
-- Put reference material too bulky to keep in context every session in `docs/`,
-  linked from `info.md`. Don't move `reqs.md` or `README.md` there — they have
-  their own homes.
-- Update `info.md` when the code's behavior or design changes.
-

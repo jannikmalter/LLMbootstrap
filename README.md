@@ -15,18 +15,25 @@ structure — without losing state when its context is cleared.
 - **Lightweight requirements engineering** — stable IDs, "shall" requirements, and
   goal traceability; markdown only, sized for solo work.
 - **Lossless adoption** — an "active alignment" step reorganizes an existing
-  project into the structure without discarding or inventing anything.
+  project into the structure, losing nothing that still holds and inventing nothing.
 
 ## Using it
-1. Copy `LLMbootstrap.md` into your project.
-2. Have `CLAUDE.md` import it (`@LLMbootstrap.md`).
-3. Ask your agent: *"Bring this project into line with `LLMbootstrap.md`."*
+Built for one user working with Claude Code.
 
-The agent first shows you a summary of what it would create, move, or delete and
+1. Point the project's `CLAUDE.md` at the shared copy of `LLMbootstrap.md` in this
+   repo's checkout, so every project follows the latest version. (Copying the file
+   into the project and importing it with `@LLMbootstrap.md` also works.)
+2. New project: ask the agent to start it; it asks you for purpose, goals, and scope.
+   Existing project: *"Bring this project into line with `LLMbootstrap.md`."*
+
+For an existing project, the agent first shows you a summary of what it would create, move, or delete and
 waits for your OK. It then creates or reorganizes the project's files to match the
 structure, relocating existing content rather than discarding it, and reports
 anything unclear as an open question. Requirements it infers from code are only
 proposals until you accept them. Code files are read but never edited.
+
+In daily work, the agent also fixes unambiguous problems in the records as it comes
+across them, and asks when in doubt.
 
 ## This repository
 This repo builds `LLMbootstrap.md` and is itself governed by it. See `info.md` for

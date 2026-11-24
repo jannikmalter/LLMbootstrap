@@ -1,14 +1,17 @@
 # LLMbootstrap — Requirements
 
-Status: Active · Updated: 2026-11-24
-
 ## Goals
 Why this exists. Everything below traces to one of these.
 
-- **G1** — Give an LLM agent a single, portable file that imposes a consistent, durable, file-based structure and workflow on any project it is dropped into.
-- **G2** — Lose no project state across context resets: goals, requirements, decisions, and tasks live in files, not the chat.
-- **G3** — Stay lightweight and solo-friendly: simple requirements-engineering conventions, no heavyweight tooling.
-- **G4** — Be safely self-applicable: the workflow can govern its own repo without self-misalignment.
+Purpose: let one person build software with LLM agents across many projects and
+sessions, so that the agent builds what that person decided, nothing important depends
+on the chat, and the process costs little effort and context.
+
+- **G1** — Adoption: any of the user's projects, new or existing, can adopt the workflow and stay on its current version.
+- **G2** — Continuity: lose no project state across context resets; goals, requirements, decisions, and tasks live in files, not the chat.
+- **G3** — Low cost: little tooling, little context, few interruptions.
+- **G4** — Self-application (a goal of this repo, not of the product): the workflow can govern its own repo without self-misalignment.
+- **G5** — Intent: the agent builds what the user decided, neither inventing nor silently changing it.
 
 ## Out of scope
 What this deliberately will *not* do.
@@ -22,65 +25,57 @@ One row each. Use "shall". `Type`: F=function, Q=quality, C=constraint.
 | ID | Type | Requirement                                                                                                                                                   | Pri | Goal | Status |
 |----|------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|-----|------|------|
 | R1 | F    | LLMbootstrap.md shall define a canonical file layout with one home per kind of information (`CLAUDE.md`, `reqs.md` + `reqs/`, `todo.md`, `changelog.md`, `info.md`, `docs/`, `README.md`). | M   | G1   | Implemented |
-| R2 | F    | The file shall be portable — droppable into any project and usable without project-specific edits.                                                             | M   | G1   | Implemented |
+| R2 | F    | The file shall govern any of the user's Claude Code projects, by reference or as a copy, without project-specific edits to it. | M   | G1   | Implemented |
 | R3 | F    | The workflow shall keep durable state in files, with `reqs.md` as the single source of truth for requirements and status, `todo.md` for tasks, and `info.md` for design decisions, so clearing the agent's context loses no goals, requirements, decisions, or tasks. | M   | G2   | Implemented |
-| R4 | F    | The file shall define an "active alignment" (apply) operation that reorganizes an existing project into the layout losslessly — losing no information and inventing nothing — inferring requirements from code when records are sparse. | M   | G1   | Implemented |
+| R4 | F    | The file shall define an "active alignment" (apply) operation that reorganizes an existing project into the layout, losing no information that still holds and inventing nothing, inferring requirements from code when records are sparse. | M   | G1   | Implemented |
 | R5 | C    | The workflow shall use lightweight RE conventions (stable IDs, singular verifiable "shall" requirements, goal traceability, a two-layer reqs structure) with no heavyweight tooling. | S   | G3   | Implemented |
 | R6 | F    | The file shall provide ready-to-use templates for its artifacts (`reqs.md`, `reqs/<ID>.md`, `todo.md`, `changelog.md`).                                                        | S   | G1   | Implemented |
-| R7 | C    | The workflow shall be safely self-applicable: governing its own repo without causing self-misalignment, with the author/subject recursion explicitly guarded.  | M   | G4   | Implemented |
+| R7 | C    | This repo's `CLAUDE.md` shall state guardrails against the author/subject recursion. | M   | G4   | Implemented |
 | R8 | F    | The file shall define a `changelog.md` — a chronological change record kept as a separate file so `reqs.md` stays small enough to hold in context while the changelog can grow and is read on demand. | S   | G2   | Implemented |
-| R9 | F    | The workflow shall record project-level open questions in a dedicated `reqs.md` section, so ambiguities are captured durably instead of guessed at or lost with the chat. | S   | G2   | Implemented |
+| R9 | F    | The workflow shall record project-level open questions in a dedicated `reqs.md` section, so ambiguities are captured durably instead of guessed at or lost with the chat. | S   | G5   | Implemented |
 | R10 | F   | The active-alignment operation shall be specified as an ordered procedure (inventory → classify → confirm → reconstruct → relocate → account → record) whose final accounting step makes losslessness checkable against the initial inventory. | S   | G1   | Implemented |
-| R19 | F   | Active alignment shall, before changing any project file, write its inventory and plan to a working file, present a short summary, and wait for the user's confirmation unless the user has explicitly opted out. | M   | G1   | Implemented |
-| R20 | C   | The alignment inventory shall exclude dependency, build, VCS, and generated files. | S   | G1   | Implemented |
+| R19 | F   | Active alignment shall, before changing any project file, write its inventory and plan to a working file, present a short summary, and wait for the user's confirmation unless the user has explicitly opted out. | M   | G5   | Implemented |
+| R20 | C   | The alignment inventory shall exclude dependency, build, VCS, and generated files. | S   | G3   | Implemented |
 | R21 | C   | Active alignment shall treat code files as read-only sources. | M   | G1   | Implemented |
 | R22 | C   | Active alignment shall delete only files whose deletion is listed in its plan (confirmed per R19 unless opted out), apart from its own working file. | M   | G1   | Implemented |
 | R23 | F   | The prescribed `CLAUDE.md` setup shall import `reqs.md`, and the workflow shall tell agents that do not load it automatically to read it before working. | M   | G2   | Implemented |
-| R24 | F   | The `reqs.md` tables shall track the lifecycle of each requirement and bug in a `Status` column. | M   | G1   | Implemented |
-| R25 | C   | The workflow shall reserve accepting a requirement to the user. | M   | G1   | Implemented |
-| R26 | C   | The workflow shall permit implementing only accepted requirements. | M   | G1   | Implemented |
-| R27 | C   | Behavior inferred from code shall be recorded as Proposed until the user accepts it. | M   | G1   | Implemented |
-| R28 | F   | The workflow shall let a requirement be retired without removing its row or reusing its ID. | S   | G2   | Implemented |
+| R24 | F   | The `reqs.md` tables shall track the lifecycle of each requirement and bug in a `Status` column. | M   | G5   | Implemented |
+| R25 | C   | The workflow shall reserve accepting a requirement to the user. | M   | G5   | Implemented |
+| R26 | C   | The workflow shall permit implementing only accepted requirements. | M   | G5   | Implemented |
+| R27 | C   | Behavior inferred from code shall be recorded as Proposed until the user accepts it. | M   | G5   | Implemented |
+| R28 | F   | Dropping a requirement shall remove its row and record what was dropped and why in `changelog.md`. | S   | G2   | Verified |
 | R29 | Q   | The templates in `LLMbootstrap.md` shall follow the rules that file states. | S   | G1   | Implemented |
-
-R1–R7 are recorded **(as-built)** — the implementation is `LLMbootstrap.md` itself (R7's guardrails live in `CLAUDE.md`); the file is the evidence. R8–R10 were added and implemented 2026-07-02: R8 motivated by an agent in another project spontaneously growing a changelog inside `reqs.md`; R9 because the workflow told agents to raise open questions but gave them no durable home; R10 because the lossless apply was five lines of prose with no verifiable procedure. R19–R22 (added 2026-11-24) restore safeguards that v1 had and the 2026-06-24 rewrite dropped without a recorded reason; R23 fixes B6. R24–R29 (added 2026-11-24) came from a comparison with professional requirements engineering. `Done` was converted to `Status` by the rule in `LLMbootstrap.md`; R1–R7 thereby became Proposed; the user accepted them on 2026-11-24.
+| R30 | C   | The workflow shall confine `reqs.md` to the current state. | M   | G3   | Implemented |
+| R31 | C   | The workflow shall confine `todo.md` to unfinished work. | S   | G3   | Verified |
+| R32 | F   | The workflow shall have the agent fix unambiguous issues it comes across in the project's structure and records without being asked. | M   | G2   | Implemented |
+| R33 | F   | The workflow shall have the agent obtain the user's confirmation before fixing an issue whose fix is in doubt. | M   | G5   | Implemented |
+| R34 | F   | The workflow shall have the agent reconcile each request with the records before changing anything. | M   | G5   | Implemented |
+| R35 | C   | The workflow shall forbid recording or building anything that is not established. | M   | G5   | Implemented |
+| R36 | F   | The file shall define how a new project is started, including asking the user for its goals. | M   | G1   | Implemented |
+| R37 | F   | The workflow shall have the agent record the state of unfinished work in `todo.md`. | M   | G2   | Implemented |
+| R38 | Q   | `LLMbootstrap.md` shall not exceed 2,500 words. | S   | G3   | Verified |
+| R39 | C   | The workflow shall keep project facts out of the agent's built-in memory. | ?   | G2   | Implemented |
+| R40 | C   | The workflow shall leave a requirement's priority unset until the user states it. | ?   | G5   | Implemented |
+| R41 | F   | Alignment shall name sources that are not files in its changelog entry. | ?   | G2   | Implemented |
 
 ## Bugs
 Deviations from a requirement. `Ref` = the requirement broken.
 
 | ID | Bug                                                                                   | Ref | Sev | Status |
 |----|---------------------------------------------------------------------------------------|-----|-----|------|
-| B1 | "Which hat" guardrail frames authoring vs. operating as mutually exclusive, but editing `LLMbootstrap.md` is both — leaving a foothold to skip the `reqs.md` reconcile under the authoring hat. | R7  | Md  | Fixed |
-| B6 | Nothing loads `reqs.md`: the spec calls it the "always-loaded overview", but the prescribed imports are only `LLMbootstrap.md` and `info.md`, so reading it depends on the agent remembering to. Observed 2026-11-24 in this repo: a session started without it in context. | R3 | Hi | Verified |
-| B7 | Todos have two homes: the spec puts them in `reqs.md` (Working principles, "Where things live", tracking intro) and also in `todo.md`; the `reqs.md` template has no todo section. | R1 | Md | Fixed |
-| B8 | Decisions have no defined home: Working principles say `reqs.md` / `reqs/`, but neither its template nor the classify step has the category; in this repo they live in `info.md`. | R1 | Md | Fixed |
 | B9 | The alignment inventory need not be written to a file, so the losslessness check depends on chat and does not survive a context reset. | R10 | Md | Fixed |
-| B10 | `reqs/R7.md` ("Which hat") still says every action is *either* authoring *or* operating — the exclusive framing B1 claims to have removed everywhere. | R7 | Lo | Fixed |
-| B11 | IDs were reused: the 2026-06-24 rewrite restarted numbering, so R1–R10 and B1 mean something different in git history before that date. (dropped: renumbering again would break current references; range documented below) | R5 | Md | Dropped |
-| B12 | Records lost or misstate history: the 2026-06-24 changelog line says "first self-apply", but `CLAUDE.md` held managed blocks from an earlier apply on 2026-06-23; an open v1 todo (non-file sources) was dropped without a trace. | R3 | Md | Fixed |
-| B13 | Stale text: R1 and R6 omit `changelog.md`; `CLAUDE.md` guardrail 2 still says "once they exist" of the project records. | R3 | Lo | Fixed |
+| B15 | Moving history out of `reqs.md` can lose it: agents delete it unmoved, or report it as moved when part of it was not. | R4 | Md | Fixed |
+| B16 | An alignment run without confirmation leaves no `alignment.md`, although it must stay until the user accepts the result; whether it was ever written is unknown. | R19 | Md | Fixed |
 
 ## Open questions
 Ambiguities awaiting the user's decision — recorded here instead of guessed at.
 Remove once answered, folding the answer into the records above.
 
-- Should `README.md` document reference-mode usage (other projects pointing at a
-  live copy of `LLMbootstrap.md`) alongside the copy-mode it describes now? The
-  user in fact uses reference-mode. The product itself also assumes copy-mode:
-  "`CLAUDE.md` imports this file automatically". (affects README, R2)
-- Add a version/date marker to `LLMbootstrap.md` for public distribution? Raised
-  2026-07-02, deprioritized for the user's own reference-mode use, never decided.
-  Reference-mode may argue for it: every save here, even uncommitted, changes
-  the rules other projects read.
-- Should the guardrails name a third role, *live deployment*? Via reference-mode
-  this copy is already in force elsewhere while being edited. (affects R7)
-- How should the workflow treat an agent's built-in memory outside the repo, which
-  competes with `reqs.md` as durable memory? (affects R3)
-- How should an apply handle non-file sources (e.g. a chat) so that it is
-  reproducible and provenance is recorded? Open todo from v1. (affects R4)
+- The priorities of R19–R38 were set by the agent, not the user: confirm them, or set
+  them to `?`? (affects R40)
 
 ---
-*R status:* Proposed → Accepted → Implemented → Verified, or Dropped. *B status:* Open → Fixed → Verified, or Dropped.
-*Pri:* M/S/C (must/should/could). *Sev:* Hi/Md/Lo. IDs are permanent — never reuse.
-*Before the 2026-06-24 rewrite, R1–R18 and B1–B5 were in use (see B11); numbering resumes at R19 / B6.*
+*R status:* Proposed → Accepted → Implemented → Verified. *B status:* Open → Fixed.
+*Pri:* M/S/C (must/should/could), ? = not set by the user. *Sev:* Hi/Md/Lo.
+*Next IDs:* G6, R42, B20 — removed IDs are not reused.
 *Detail files: `reqs/<ID>.md` (e.g. `reqs/R7.md`).*

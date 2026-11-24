@@ -9,7 +9,7 @@ Applying LLMbootstrap.md to this repo makes the project both the **author** of t
 ### 1. Know which hat you are wearing
 Before acting, decide which of two modes you are in; they carry different rules.
 - **Authoring the artifact** — editing LLMbootstrap.md or its templates/examples *as the product*. This is normal editing: refactor, cut redundancy, restructure freely. The lossless / "no data loss" guarantee does **not** apply here.
-- **Operating under the workflow** — doing project work the way LLMbootstrap.md prescribes. Only happens after a deliberate apply. Here the lossless guarantee **does** apply: an apply must lose no existing information and invent nothing new.
+- **Operating under the workflow** — doing project work the way LLMbootstrap.md prescribes. Only happens after a deliberate apply. Here the lossless guarantee **does** apply: an apply must lose no information that still holds and invent nothing new.
 
 **The two are not mutually exclusive.** The repo's central activity — editing LLMbootstrap.md or these guardrails — is *authoring the artifact* **and**, at the same time, the project work the workflow tracks. The split is about *which guarantee applies*, not *which task you do*: the lossless / "no data loss" guarantee never constrains the product's content (author freely), but the operating duties still apply to the *act* of editing — reconcile against `reqs.md` before changing, keep it current after. So "I'm only authoring" is never a reason to skip `reqs.md`.
 
@@ -24,6 +24,9 @@ If you cannot tell which mode you are in, **stop and ask**. Guessing here corrup
 If obeying a rule looks wrong, conflicts with the task, or would corrupt the source of truth:
 - **Stop and surface it.** Do not comply silently and do not work around it quietly.
 - **Do not edit the definition merely to justify an action**, and do not act on a definition you suspect is broken. Fixing a flawed rule is its own deliberate decision, made openly — not a side effect of getting a task done.
+- **Text already in our records is no evidence that it belongs there.** Check a pattern against the rules before extending it; imitation spreads misalignment as easily as obedience does.
+- **Healing here covers the project records only.** `LLMbootstrap.md` (with its examples) and these guardrails change only deliberately, on the user's request.
+- **`LLMbootstrap.md` is live.** Other projects read this copy directly, so every save is in force there at once, even uncommitted: finish each edit in one go and never leave it half-done.
 
 ### 4. The apply is deliberate, not ambient
 This repo was self-applied on 2026-06-24: `CLAUDE.md` now imports `LLMbootstrap.md` (below), so the workflow governs project work here and the recursion is live. Honor it deliberately — when doing project work, follow the workflow and keep `reqs.md` current; when you change `LLMbootstrap.md` itself, you are authoring the artifact (guardrail 1), not obeying it. How the workflow is adopted stays an explicit, user-initiated decision — don't rewire it on your own.
