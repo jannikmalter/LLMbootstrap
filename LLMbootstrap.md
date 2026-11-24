@@ -18,8 +18,8 @@ project's own files, never duplicated.
   first: if it fits the existing goals and requirements, proceed; if it's new, add
   the requirement/bug (or goal) first — or a todo in `todo.md`, if it is only a
   work item; if it changes one, edit that item first. Implement only once the
-  records reflect the intended change. After changing code, scan the records and
-  update affected items.
+  records reflect the intended change and the user has accepted it. After changing
+  code, scan the records and update affected items.
 - **Don't work from memory or invent facts.** What the project shall do is decided
   in `reqs.md` / `reqs/`, how it is built in `info.md`, what is to be worked on in
   `todo.md`; if it isn't written there, it isn't decided. Record only what is
@@ -90,7 +90,9 @@ alignment was interrupted — resume from it.
    - Recorded requirements and plans move over with their meaning intact —
      rephrase to "shall" form, but change no content.
    - Behavior evident in the code but recorded nowhere becomes an `R#` row
-     tagged `(as-built)`, marked Done — the code is the evidence.
+     tagged `(as-built)`, status `Proposed`. Requirements the project's own
+     documents already state are `Accepted`, or `Implemented` if evidently built.
+   - A `Done` column is converted to `Status` (rule under "reqs.md" below).
    - Stated intentions become todos; known defects become bugs; anything
      ambiguous or conflicting becomes an open question — never a guess.
 5. **Relocate, don't rewrite.** Move content to its home preserving meaning;
@@ -101,8 +103,9 @@ alignment was interrupted — resume from it.
    question. Delete a source file only if it is fully absorbed *and* its deletion
    was listed in the plan.
 7. **Record the apply.** Add a `changelog.md` entry, update the `reqs.md`
-   date, and report the open questions to the user. Keep `alignment.md` until the
-   user accepts the result, then delete it.
+   date, and report the open questions and `Proposed` items to the user for a
+   decision. Keep `alignment.md` until the user accepts the result, then delete it;
+   accepting the result does not by itself accept the `Proposed` items.
 
 
 
@@ -122,23 +125,37 @@ Conventions:
   F=function / Q=quality / C=constraint), `B#` bugs.
 - Requirements use "shall", are singular and verifiable, and each traces to a goal.
 - Tracked status, priority, and severity live **only** in the `reqs.md` tables —
-  the `Done` box there is authoritative. Checkboxes inside a `reqs/<ID>.md` are
-  working notes (acceptance criteria, fix steps), not the tracked status.
-- `Done` means *implemented and not known to be broken* — verified by use, not
-  necessarily by a test. A problem found later becomes a `B#` bug, not a reopened
-  requirement.
-- You may record already-built behavior as a normal `R#` (describe what the code
-  does, trace it to a goal) and mark it `Done` once the implementation is
-  present — the code is the evidence. Note its source file/symbol in the detail
-  file or with an inline `(as-built)` tag.
+  the `Status` column there is authoritative. Checkboxes inside a `reqs/<ID>.md`
+  are working notes (acceptance criteria, fix steps), not the tracked status.
+- Requirement status:
+  - `Proposed` — written down by the agent, not yet confirmed by the user.
+  - `Accepted` — the user wants it. Only the user accepts; an explicit request for
+    it counts, the agent's own inference does not. Implement only what is accepted.
+  - `Implemented` — built and not known to be broken.
+  - `Verified` — built and *observed* to meet the requirement, by use or by a test;
+    note how in the detail file or the changelog. The agent may set it only for
+    what it or the user has actually observed, never from reading the code alone.
+  - `Dropped` — no longer wanted, or replaced. The row and ID stay; note the reason
+    or the successor in the row.
+- Changing what an accepted requirement means also needs the user's acceptance, and
+  returns it to `Accepted` until the change is built. Mere rewording does not.
+- Bug status: `Open`, `Fixed`, `Verified` (the fix was observed to work), `Dropped`
+  (won't fix; note why in the row). A problem found in a built requirement becomes
+  a `B#` bug; the requirement keeps its status.
+- You may record already-built behavior as an `R#` (describe what the code does,
+  trace it to a goal), tagged `(as-built)` with its source file/symbol in the row or
+  detail file. It starts as `Proposed`: code proves what happens, not that it is
+  wanted. Once the user accepts it, it is `Implemented`.
+- A table that still has a `Done` column (older format) is converted at the next
+  alignment. Requirements: ☐ → `Accepted`, ☑ → `Implemented`, but any `(as-built)`
+  → `Proposed`. Bugs: ☐ → `Open`, ☑ → `Fixed`. Until then, read it that way.
 - Open questions live in the `reqs.md` **Open questions** section: record one the
   moment something is ambiguous, conflicting, or underspecified — it blocks
   guessing, not all work, so continue with whatever is unaffected. Questions tied
   to a single item stay in that item's `reqs/<ID>.md`. When the user answers,
   fold the answer into the proper record (requirement, goal, detail file, or
-  `info.md` for a design decision) and
-  remove the question; the resolution is noted in `changelog.md`, not kept in
-  the list.
+  `info.md` for a design decision) and remove the question; the resolution is
+  noted in `changelog.md`, not kept in the list.
 - On any add / complete / fix, update the affected record (`reqs.md`, `todo.md`,
   `info.md`) and add a line to `changelog.md`. Reference IDs in commits, e.g.
   `fix(B1): ...`.
@@ -164,27 +181,32 @@ What this deliberately will *not* do (stops scope creep).
 ## Requirements
 One row each. Use "shall". `Type`: F=function, Q=quality, C=constraint.
 
-| ID  | Type | Requirement                                   | Pri | Goal | Done |
-|-----|------|-----------------------------------------------|-----|------|------|
-| R1  | F    | The system shall ...                          | M   | G1   | ☑    |
-| R2  | F    | The system shall ...                          | S   | G1   | ☐    |
-| R3  | Q    | ... within 1 s for 10k items.                 | S   | G2   | ☐    |
-| R4  | C    | Must run on Python 3.11+, no external DB.      | M   | G1   | ☑    |
+| ID | Type | Requirement                                                            | Pri | Goal | Status      |
+|----|------|------------------------------------------------------------------------|-----|------|-------------|
+| R1 | F    | The system shall store each note as a Markdown file.                   | M   | G1   | Verified    |
+| R2 | F    | The system shall preserve a note's content when saving it.             | M   | G1   | Implemented |
+| R3 | F    | The system shall return every note that contains the search term.      | S   | G2   | Accepted    |
+| R4 | Q    | The system shall return search results within 1 s for 10k notes (p95). | S   | G2   | Accepted    |
+| R5 | C    | The system shall run on Python 3.11 or later.                          | M   | G1   | Verified    |
+| R6 | F    | The system shall delete a note on request. (as-built: `notes.delete`)  | S   | G1   | Proposed    |
+| R7 | F    | The system shall find notes by filename. (replaced by R3)              | C   | G2   | Dropped     |
 
 ## Bugs
 Deviations from a requirement. `Ref` = the requirement broken.
 
-| ID | Bug                                  | Ref | Sev | Done |
-|----|--------------------------------------|-----|-----|------|
-| B1 | Non-ASCII filename corrupts on save. | R2  | Hi  | ☐    |
+| ID | Bug                                  | Ref | Sev | Status |
+|----|--------------------------------------|-----|-----|--------|
+| B1 | Non-ASCII filename corrupts on save. | R2  | Hi  | Open   |
 
 ## Open questions
 Ambiguities awaiting the user's decision — recorded here instead of guessed at.
 Remove once answered, folding the answer into the records above.
 
-- Keep deleted notes in a trash folder, or delete permanently? (affects R2)
+- Keep deleted notes in a trash folder, or delete permanently? (affects R6)
 
 ---
+*R status:* Proposed → Accepted → Implemented → Verified, or Dropped.
+*B status:* Open → Fixed → Verified, or Dropped.
 *Pri:* M/S/C (must/should/could). *Sev:* Hi/Md/Lo. IDs are permanent — never reuse.
 *Detail files: `reqs/<ID>.md` (e.g. `reqs/R3.md`, `reqs/B1.md`).*
 ```
@@ -194,19 +216,18 @@ Remove once answered, folding the answer into the records above.
 ```markdown
 # R3 — Full-text search
 
-**Requirement.** The system shall search the full text of all notes and return
-matches within 1 s for a 10k-note corpus.
+**Requirement.** The system shall return every note that contains the search term.
 
 ## Rationale
 Browsing by filename does not scale past a few hundred notes. Traces to **G2**.
 
 ## Acceptance criteria
-Verifiable conditions; all must hold before R3 is marked done in `reqs.md`.
+Verifiable conditions; all must hold before R3 is set to `Verified`.
 
-- [ ] Query returns every note containing the term, case-insensitive.
-- [ ] p95 latency < 1 s at 10k notes on the target host.
-- [ ] Index updates when a note is added, edited, or deleted.
-- [ ] Empty query returns no results (not all notes).
+- [ ] Searching `apple` returns a note containing `Apple` and one containing `apple`,
+      and no note without the word.
+- [ ] A note that was added, edited, or deleted is reflected in the next search.
+- [ ] An empty query returns no results (not all notes).
 
 ## Design notes
 - Candidate: SQLite FTS5 vs. in-memory inverted index.
@@ -216,7 +237,7 @@ Verifiable conditions; all must hold before R3 is marked done in `reqs.md`.
 - Stem/normalize terms, or exact substring only?
 
 ## Links
-Blocked by: R1  ·  Related bugs: —
+Blocked by: R1  ·  Related: R4 (speed)  ·  Related bugs: —
 ```
 
 ### Template — `reqs/<ID>.md` (bug)
@@ -265,7 +286,7 @@ Work items. Reference the ID they advance.
 
 - [ ] Implement search backend. (R3)
 - [ ] Write deploy notes.
-- [x] Add atomic-write test. (R4)
+- [x] Add atomic-write test. (R2)
 
 ```
 
@@ -290,7 +311,7 @@ Newest first. One line per notable change; reference IDs.
 
 - 2025-07-02 — Implemented full-text search backend. (R3)
 - 2025-06-30 — Fixed non-ASCII filename corruption. (B1)
-- 2025-06-28 — Widened R3 to include tag search; added B1.
+- 2025-06-28 — Accepted R3, dropped R7 in its favor; added B1.
 ```
 
 

@@ -2,6 +2,9 @@
 
 Newest first. One line per notable change; reference IDs.
 
+- 2026-11-24 — User accepted the as-built R1–R7; status Proposed → Implemented. (R1–R7)
+- 2026-11-24 — Replaced `Done` with a `Status` lifecycle in the spec, templates, and this repo's tables; accepting is reserved to the user, as-built items start as Proposed (R1–R7 here), requirements can be Dropped. B6 converted to Verified (observed in a fresh session, see below), B11 to Dropped (won't renumber). (R24–R28)
+- 2026-11-24 — Templates now follow the file's own rules: "shall", singular requirements, consistent example IDs. (R29)
 - 2026-11-24 — Closed B11 without renumbering: changing IDs again would break today's references, so `reqs.md` documents the pre-rewrite range and numbering resumes after it. (B11)
 - 2026-11-24 — Closed B12: corrected the first-self-apply entry; of the two open v1 todos dropped in the rewrite, non-file sources is an open question again and "define further workflow modules" is obsolete (modules no longer exist). (B12)
 - 2026-11-24 — Fixed B10 (exclusive framing in `reqs/R7.md`) and B13 (stale text in R1, R6, `CLAUDE.md`). (B10, B13)

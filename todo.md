@@ -13,4 +13,5 @@ Work items. Reference the ID they advance.
 - [x] Prescribe and add the `reqs.md` import. (R23, B6)
 - [x] Give todos and decisions one defined home each. (R1, R3, B7, B8)
 - [x] Clean up this repo's records. (B10, B11, B12, B13)
+- [x] Replace `Done` with a status lifecycle and correct the templates. (R24–R29)
 - [ ] Validate the workflow by applying it to an external project. (R2)

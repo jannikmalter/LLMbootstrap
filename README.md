@@ -25,7 +25,8 @@ structure — without losing state when its context is cleared.
 The agent first shows you a summary of what it would create, move, or delete and
 waits for your OK. It then creates or reorganizes the project's files to match the
 structure, relocating existing content rather than discarding it, and reports
-anything unclear as an open question. Code files are read but never edited.
+anything unclear as an open question. Requirements it infers from code are only
+proposals until you accept them. Code files are read but never edited.
 
 ## This repository
 This repo builds `LLMbootstrap.md` and is itself governed by it. See `info.md` for

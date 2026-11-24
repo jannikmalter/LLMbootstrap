@@ -32,6 +32,16 @@ The file is organized as:
   (B7, B8).
 - **Two-layer requirements** — a single overview/status table in `reqs.md`, with
   `reqs/<ID>.md` detail files only where an item needs one (G3).
+- **Status instead of Done** — a single Done box hid who wanted a requirement and
+  whether it was ever checked. The agent both writes and implements requirements, so
+  accepting one is reserved to the user, and as-built items start as Proposed —
+  otherwise a bug in the code becomes a completed requirement. `Implemented` and
+  `Verified` are separate, and `Dropped` retires a row without losing its ID
+  (R24–R28). Found by comparing the file with professional RE; stakeholder analysis,
+  baselines (git is enough), traceability matrices, and per-requirement verification
+  methods were left out as too heavy for G3.
+- **Templates obey the rules** — agents copy examples closely, so an example that
+  breaks a rule teaches the violation (R29).
 - **Lightweight RE** — stable IDs, "shall", goal traceability; no heavyweight
   tooling, sized for a solo project (G3).
 - **Lossless apply** — the alignment operation reorganizes, never discards or
