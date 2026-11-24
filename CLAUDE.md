@@ -17,7 +17,7 @@ If you cannot tell which mode you are in, **stop and ask**. Guessing here corrup
 
 ### 2. Keep product and project records strictly separate
 - **Product content** is LLMbootstrap.md and *everything inside it*, including its templates and worked examples (e.g. the full-text-search requirement, the `notiz-üöä.md` bug, the Python/SQLite specifics). These are illustrative parts of the deliverable — **not** our requirements, bugs, or facts.
-- **Project records** are this repo's own `reqs.md` / `info.md` / `README.md` and the like (once they exist), which describe *the work of building LLMbootstrap.md*.
+- **Project records** are this repo's own `reqs.md` / `info.md` / `README.md` and the like, which describe *the work of building LLMbootstrap.md*.
 - Never fold the file's examples into our records, and never treat our records as product content. Any "active alignment" run on this repo must not ingest the product's examples as project facts, nor trim or "optimize" product content under the banner of alignment.
 
 ### 3. Do not follow a rule you suspect is wrong
@@ -29,7 +29,8 @@ If obeying a rule looks wrong, conflicts with the task, or would corrupt the sou
 This repo was self-applied on 2026-06-24: `CLAUDE.md` now imports `LLMbootstrap.md` (below), so the workflow governs project work here and the recursion is live. Honor it deliberately — when doing project work, follow the workflow and keep `reqs.md` current; when you change `LLMbootstrap.md` itself, you are authoring the artifact (guardrail 1), not obeying it. How the workflow is adopted stays an explicit, user-initiated decision — don't rewire it on your own.
 
 ## Imported project files
-This repo is governed by its own product, so the workflow and internal docs load here:
+This repo is governed by its own product, so the workflow, requirements, and internal docs load here:
 
 @LLMbootstrap.md
+@reqs.md
 @info.md

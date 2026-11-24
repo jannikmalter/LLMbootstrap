@@ -22,9 +22,10 @@ structure — without losing state when its context is cleared.
 2. Have `CLAUDE.md` import it (`@LLMbootstrap.md`).
 3. Ask your agent: *"Bring this project into line with `LLMbootstrap.md`."*
 
-The agent then creates or reorganizes the project's files to match the structure,
-relocating existing content rather than discarding it and asking when something is
-unclear.
+The agent first shows you a summary of what it would create, move, or delete and
+waits for your OK. It then creates or reorganizes the project's files to match the
+structure, relocating existing content rather than discarding it, and reports
+anything unclear as an open question. Code files are read but never edited.
 
 ## This repository
 This repo builds `LLMbootstrap.md` and is itself governed by it. See `info.md` for

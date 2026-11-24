@@ -15,27 +15,42 @@ The file is organized as:
 - a working-principles preamble (`reqs.md` as durable memory, reconcile before
   changing, don't invent facts),
 - a **"where things live"** map — one home per kind of information,
-- an **active-alignment (apply)** spec — a six-step procedure (inventory →
-  classify → reconstruct → relocate → account → record) that brings an existing
-  project into the layout losslessly,
-- the **`reqs.md` tracking** spec, with templates for `reqs.md`, `reqs/<ID>.md`,
-  and `todo.md`,
+- an **active-alignment (apply)** spec — a seven-step procedure (inventory →
+  classify → confirm → reconstruct → relocate → account → record) that brings an
+  existing project into the layout losslessly,
+- the **`reqs.md` tracking** spec, with templates for `reqs.md` and `reqs/<ID>.md`,
+- the **`todo.md`** spec — the only home for todos,
 - the **`changelog.md`** spec — the on-demand change record,
 - the **`info.md` / `docs`** spec.
 
 ## Key design decisions
 - **Files are memory, the chat is scratch** — durable state lives in `reqs.md` so a
   context reset loses nothing (G2).
+- **One home for todos, two for decisions** — todos live only in `todo.md`, read on
+  demand when planning or resuming work. Decisions split by kind: what the project
+  shall do in `reqs.md`, how it is built in `info.md`; both load every session
+  (B7, B8).
 - **Two-layer requirements** — a single overview/status table in `reqs.md`, with
   `reqs/<ID>.md` detail files only where an item needs one (G3).
 - **Lightweight RE** — stable IDs, "shall", goal traceability; no heavyweight
   tooling, sized for a solo project (G3).
 - **Lossless apply** — the alignment operation reorganizes, never discards or
   invents; requirements are inferred from code when records are sparse (G1, G2).
-  Specified as an ordered procedure whose first step (inventory) and fifth step
+  Specified as an ordered procedure whose first step (inventory) and sixth step
   (accounting) bracket the work, making losslessness checkable rather than
   aspirational: nothing moves before it is listed, nothing is deleted before it
   is accounted for (R10).
+- **Apply safeguards** — confirm before writing, skip dependency/build/VCS/generated
+  files, code read-only, delete only what the plan lists (R19–R22). v1 had
+  the first three; the 2026-06-24 rewrite dropped them without a recorded reason.
+  They matter because an agent applying the file may work in a project with no clean
+  git state to fall back on. The inventory and plan live in a temporary
+  `alignment.md`, so both the plan and the losslessness check survive a context
+  reset (B9).
+- **`reqs.md` is imported, not just mentioned** — relying on the agent to remember to
+  read it left sessions without it in context (B6). `CLAUDE.md` imports it; the "if
+  it is not in your context, read it" rule covers agents without import support and
+  projects set up before the import was prescribed (R23).
 - **Changelog outside the loaded context** — `reqs.md` holds current state and is
   always in context; `changelog.md` holds the trajectory, may grow without bound,
   and is read on demand (G2, R8). Motivated by an agent in another project
