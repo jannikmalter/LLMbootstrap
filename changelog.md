@@ -2,6 +2,7 @@
 
 Newest first. One line per notable change; reference IDs.
 
+- 2026-11-24 — Set the priorities of R19–R38 to `?` on user decision: the agent had guessed them. (R40)
 - 2026-11-24 — User accepted the 2,500-word limit (R38; 2,241 words counted, so Verified) and answered the open questions: no project facts in agent memory (R39), priority unset until stated (R40), non-file sources named in the changelog (R41), live-copy guardrail added to `CLAUDE.md` (R7). No version marker: git records versions and only the user uses the file. (R7, R38–R41)
 - 2026-11-24 — Reworked the goals to match the purpose (G1, G3, G4 reworded, G5 added), re-traced all requirements, narrowed R7 to this repo's `CLAUDE.md`. Added R34–R37 for rules that had none (R34, R35) or were missing (R36, R37); R38 (size budget) proposed. (G1–G5, R7, R34–R38)
 - 2026-11-24 — User decided the file is only for them with Claude Code: R2 reworded, README describes reference mode, support for other agents cut. (R2)

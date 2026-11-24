@@ -34,26 +34,26 @@ One row each. Use "shall". `Type`: F=function, Q=quality, C=constraint.
 | R8 | F    | The file shall define a `changelog.md` — a chronological change record kept as a separate file so `reqs.md` stays small enough to hold in context while the changelog can grow and is read on demand. | S   | G2   | Implemented |
 | R9 | F    | The workflow shall record project-level open questions in a dedicated `reqs.md` section, so ambiguities are captured durably instead of guessed at or lost with the chat. | S   | G5   | Implemented |
 | R10 | F   | The active-alignment operation shall be specified as an ordered procedure (inventory → classify → confirm → reconstruct → relocate → account → record) whose final accounting step makes losslessness checkable against the initial inventory. | S   | G1   | Implemented |
-| R19 | F   | Active alignment shall, before changing any project file, write its inventory and plan to a working file, present a short summary, and wait for the user's confirmation unless the user has explicitly opted out. | M   | G5   | Implemented |
-| R20 | C   | The alignment inventory shall exclude dependency, build, VCS, and generated files. | S   | G3   | Implemented |
-| R21 | C   | Active alignment shall treat code files as read-only sources. | M   | G1   | Implemented |
-| R22 | C   | Active alignment shall delete only files whose deletion is listed in its plan (confirmed per R19 unless opted out), apart from its own working file. | M   | G1   | Implemented |
-| R23 | F   | The prescribed `CLAUDE.md` setup shall import `reqs.md`, and the workflow shall tell agents that do not load it automatically to read it before working. | M   | G2   | Implemented |
-| R24 | F   | The `reqs.md` tables shall track the lifecycle of each requirement and bug in a `Status` column. | M   | G5   | Implemented |
-| R25 | C   | The workflow shall reserve accepting a requirement to the user. | M   | G5   | Implemented |
-| R26 | C   | The workflow shall permit implementing only accepted requirements. | M   | G5   | Implemented |
-| R27 | C   | Behavior inferred from code shall be recorded as Proposed until the user accepts it. | M   | G5   | Implemented |
-| R28 | F   | Dropping a requirement shall remove its row and record what was dropped and why in `changelog.md`. | S   | G2   | Verified |
-| R29 | Q   | The templates in `LLMbootstrap.md` shall follow the rules that file states. | S   | G1   | Implemented |
-| R30 | C   | The workflow shall confine `reqs.md` to the current state. | M   | G3   | Implemented |
-| R31 | C   | The workflow shall confine `todo.md` to unfinished work. | S   | G3   | Verified |
-| R32 | F   | The workflow shall have the agent fix unambiguous issues it comes across in the project's structure and records without being asked. | M   | G2   | Implemented |
-| R33 | F   | The workflow shall have the agent obtain the user's confirmation before fixing an issue whose fix is in doubt. | M   | G5   | Implemented |
-| R34 | F   | The workflow shall have the agent reconcile each request with the records before changing anything. | M   | G5   | Implemented |
-| R35 | C   | The workflow shall forbid recording or building anything that is not established. | M   | G5   | Implemented |
-| R36 | F   | The file shall define how a new project is started, including asking the user for its goals. | M   | G1   | Implemented |
-| R37 | F   | The workflow shall have the agent record the state of unfinished work in `todo.md`. | M   | G2   | Implemented |
-| R38 | Q   | `LLMbootstrap.md` shall not exceed 2,500 words. | S   | G3   | Verified |
+| R19 | F   | Active alignment shall, before changing any project file, write its inventory and plan to a working file, present a short summary, and wait for the user's confirmation unless the user has explicitly opted out. | ?   | G5   | Implemented |
+| R20 | C   | The alignment inventory shall exclude dependency, build, VCS, and generated files. | ?   | G3   | Implemented |
+| R21 | C   | Active alignment shall treat code files as read-only sources. | ?   | G1   | Implemented |
+| R22 | C   | Active alignment shall delete only files whose deletion is listed in its plan (confirmed per R19 unless opted out), apart from its own working file. | ?   | G1   | Implemented |
+| R23 | F   | The prescribed `CLAUDE.md` setup shall import `reqs.md`, and the workflow shall tell agents that do not load it automatically to read it before working. | ?   | G2   | Implemented |
+| R24 | F   | The `reqs.md` tables shall track the lifecycle of each requirement and bug in a `Status` column. | ?   | G5   | Implemented |
+| R25 | C   | The workflow shall reserve accepting a requirement to the user. | ?   | G5   | Implemented |
+| R26 | C   | The workflow shall permit implementing only accepted requirements. | ?   | G5   | Implemented |
+| R27 | C   | Behavior inferred from code shall be recorded as Proposed until the user accepts it. | ?   | G5   | Implemented |
+| R28 | F   | Dropping a requirement shall remove its row and record what was dropped and why in `changelog.md`. | ?   | G2   | Verified |
+| R29 | Q   | The templates in `LLMbootstrap.md` shall follow the rules that file states. | ?   | G1   | Implemented |
+| R30 | C   | The workflow shall confine `reqs.md` to the current state. | ?   | G3   | Implemented |
+| R31 | C   | The workflow shall confine `todo.md` to unfinished work. | ?   | G3   | Verified |
+| R32 | F   | The workflow shall have the agent fix unambiguous issues it comes across in the project's structure and records without being asked. | ?   | G2   | Implemented |
+| R33 | F   | The workflow shall have the agent obtain the user's confirmation before fixing an issue whose fix is in doubt. | ?   | G5   | Implemented |
+| R34 | F   | The workflow shall have the agent reconcile each request with the records before changing anything. | ?   | G5   | Implemented |
+| R35 | C   | The workflow shall forbid recording or building anything that is not established. | ?   | G5   | Implemented |
+| R36 | F   | The file shall define how a new project is started, including asking the user for its goals. | ?   | G1   | Implemented |
+| R37 | F   | The workflow shall have the agent record the state of unfinished work in `todo.md`. | ?   | G2   | Implemented |
+| R38 | Q   | `LLMbootstrap.md` shall not exceed 2,500 words. | ?   | G3   | Verified |
 | R39 | C   | The workflow shall keep project facts out of the agent's built-in memory. | ?   | G2   | Implemented |
 | R40 | C   | The workflow shall leave a requirement's priority unset until the user states it. | ?   | G5   | Implemented |
 | R41 | F   | Alignment shall name sources that are not files in its changelog entry. | ?   | G2   | Implemented |
@@ -71,8 +71,6 @@ Deviations from a requirement. `Ref` = the requirement broken.
 Ambiguities awaiting the user's decision — recorded here instead of guessed at.
 Remove once answered, folding the answer into the records above.
 
-- The priorities of R19–R38 were set by the agent, not the user: confirm them, or set
-  them to `?`? (affects R40)
 
 ---
 *R status:* Proposed → Accepted → Implemented → Verified. *B status:* Open → Fixed.
